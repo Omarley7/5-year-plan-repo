@@ -1,0 +1,8 @@
+# Local development compose — builds images from source.
+# The production server uses deploy/docker-compose.yml (pre-built GHCR images) instead.
+services:
+  collect-vibes:
+    build:
+      context: ./collect-vibes
+    ports:
+      - "8080:80"

@@ -1,0 +1,12 @@
+# Production compose — references only pre-built GHCR images (no build: key).
+# What's Up Docker watches these containers and pulls + restarts them
+# automatically when a new image is pushed to GHCR.
+services:
+  collect-vibes:
+    image: ghcr.io/omarley/collect-vibes:latest
+    ports:
+      - "8080:80"
+    restart: unless-stopped
+    labels:
+      - wud.watch=true
+      - wud.trigger.include=docker.local
