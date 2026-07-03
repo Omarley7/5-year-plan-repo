@@ -2,8 +2,17 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
 <title>Livskompas — Quick Capture</title>
+<meta name="description" content="Quick capture for moments worth keeping: the people you don't want to lose, what you're reaching for, and what got in the way.">
+<meta name="theme-color" content="#F7F4EF">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Livskompas">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.json">
 <style>
   :root {
     --bg: #F7F4EF;
@@ -18,8 +27,8 @@
     --dislike-soft: #F7E9E4;
     --tag-relationship: #7B5EA7;
     --tag-relationship-soft: #EEE8F5;
-    --tag-inspiration: #B9871F;
-    --tag-inspiration-soft: #F7EFDD;
+    --tag-aspiration: #B9871F;
+    --tag-aspiration-soft: #F7EFDD;
     --tag-friction: #5B6E7F;
     --tag-friction-soft: #E9EDEF;
     --tag-general: #2F6F62;
@@ -31,6 +40,11 @@
 
   * { box-sizing: border-box; }
 
+  html {
+    overscroll-behavior: none;
+    -webkit-text-size-adjust: 100%;
+  }
+
   body {
     margin: 0;
     min-height: 100vh;
@@ -39,27 +53,55 @@
     color: var(--ink);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
     display: flex;
     justify-content: center;
+  }
+
+  button {
+    touch-action: manipulation;
+    -webkit-user-select: none;
+    user-select: none;
   }
 
   .page {
     width: 100%;
     max-width: 480px;
-    padding: calc(16px + env(safe-area-inset-top)) 16px calc(32px + env(safe-area-inset-bottom));
+    padding: 0 16px calc(32px + env(safe-area-inset-bottom));
     display: flex;
     flex-direction: column;
   }
   .page.overview { max-width: 760px; }
 
   header {
+    position: sticky;
+    top: 0;
+    z-index: 20;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 22px;
+    margin: 0 -16px 18px;
+    padding: calc(14px + env(safe-area-inset-top)) 16px 12px;
+    background: rgba(247, 244, 239, 0.85);
+    -webkit-backdrop-filter: blur(14px) saturate(1.4);
+    backdrop-filter: blur(14px) saturate(1.4);
   }
   .brand { display: flex; align-items: center; gap: 10px; }
-  .brand h1 { font-size: 1.15rem; margin: 0; letter-spacing: -0.01em; font-weight: 700; }
+  .brand-text { display: flex; flex-direction: column; }
+  .brand h1 { font-size: 1.12rem; margin: 0; letter-spacing: -0.01em; font-weight: 700; line-height: 1.1; }
+  .tagline {
+    font-size: 0.62rem;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-top: 2px;
+  }
+  .logo .needle {
+    transform-origin: 22px 22px;
+    transform: rotate(45deg);
+    animation: needle-settle 1.1s cubic-bezier(0.34, 1.4, 0.4, 1) 0.15s both;
+  }
   .nav-pill {
     border: 1px solid var(--border);
     background: var(--surface);
@@ -109,7 +151,7 @@
   .tagcard .t-label { font-size: 0.85rem; font-weight: 700; }
   .tagcard .t-desc { font-size: 0.72rem; margin-top: 2px; line-height: 1.3; }
   .tagcard.active[data-tag="relationship"] { border-color: var(--tag-relationship); background: var(--tag-relationship-soft); color: var(--tag-relationship); }
-  .tagcard.active[data-tag="inspiration"]  { border-color: var(--tag-inspiration);  background: var(--tag-inspiration-soft);  color: var(--tag-inspiration); }
+  .tagcard.active[data-tag="aspiration"]   { border-color: var(--tag-aspiration);   background: var(--tag-aspiration-soft);   color: var(--tag-aspiration); }
   .tagcard.active[data-tag="friction"]     { border-color: var(--tag-friction);     background: var(--tag-friction-soft);     color: var(--tag-friction); }
 
   #captureInput {
@@ -201,7 +243,7 @@
     font-family: inherit;
   }
   .chip.active[data-tag="relationship"] { border-color: var(--tag-relationship); background: var(--tag-relationship-soft); color: var(--tag-relationship); }
-  .chip.active[data-tag="inspiration"]  { border-color: var(--tag-inspiration);  background: var(--tag-inspiration-soft);  color: var(--tag-inspiration); }
+  .chip.active[data-tag="aspiration"]   { border-color: var(--tag-aspiration);   background: var(--tag-aspiration-soft);   color: var(--tag-aspiration); }
   .chip.active[data-tag="friction"]     { border-color: var(--tag-friction);     background: var(--tag-friction-soft);     color: var(--tag-friction); }
   .chip.active[data-sent="like"]        { border-color: var(--like);    background: var(--like-soft);    color: var(--like); }
   .chip.active[data-sent="dislike"]     { border-color: var(--dislike); background: var(--dislike-soft); color: var(--dislike); }
@@ -291,7 +333,7 @@
     font-family: inherit;
   }
   .pop-btn.active[data-tag="relationship"] { border-color: var(--tag-relationship); background: var(--tag-relationship-soft); color: var(--tag-relationship); }
-  .pop-btn.active[data-tag="inspiration"]  { border-color: var(--tag-inspiration);  background: var(--tag-inspiration-soft);  color: var(--tag-inspiration); }
+  .pop-btn.active[data-tag="aspiration"]   { border-color: var(--tag-aspiration);   background: var(--tag-aspiration-soft);   color: var(--tag-aspiration); }
   .pop-btn.active[data-tag="friction"]     { border-color: var(--tag-friction);     background: var(--tag-friction-soft);     color: var(--tag-friction); }
   .pop-btn.to-like    { border-color: var(--like);    background: var(--like-soft);    color: var(--like); }
   .pop-btn.to-dislike { border-color: var(--dislike); background: var(--dislike-soft); color: var(--dislike); }
@@ -312,6 +354,73 @@
     align-items: flex-start; justify-content: center; gap: 10px;
     padding-top: 4px; overflow: visible;
   }
+
+  /* ---- Empty state ---- */
+  .empty-hint {
+    text-align: center;
+    padding: 36px 20px 8px;
+    color: var(--muted);
+    animation: rise-in 0.5s ease 0.18s both;
+  }
+  .empty-hint p { margin: 0 0 10px; font-size: 0.92rem; line-height: 1.55; }
+  .empty-hint .empty-sub { font-size: 0.8rem; color: var(--placeholder); }
+
+  /* ---- Motion & native feel ---- */
+  @keyframes rise-in {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes slide-in-right {
+    from { opacity: 0; transform: translateX(28px); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes slide-in-left {
+    from { opacity: 0; transform: translateX(-28px); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes row-enter {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes btn-pop {
+    0% { transform: scale(1); }
+    40% { transform: scale(0.93); }
+    70% { transform: scale(1.04); }
+    100% { transform: scale(1); }
+  }
+  @keyframes chip-fade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes needle-settle {
+    from { transform: rotate(-315deg); }
+    to { transform: rotate(45deg); }
+  }
+
+  header { animation: rise-in 0.4s ease both; }
+  .card { animation: rise-in 0.45s ease 0.06s both; }
+  .recent { animation: rise-in 0.45s ease 0.14s both; }
+  main.anim-right { animation: slide-in-right 0.32s cubic-bezier(0.25, 0.8, 0.35, 1) both; }
+  main.anim-left { animation: slide-in-left 0.32s cubic-bezier(0.25, 0.8, 0.35, 1) both; }
+  .recent-row.row-enter { animation: row-enter 0.4s cubic-bezier(0.2, 0.8, 0.3, 1.1) both; }
+  .qc-chip { animation: chip-fade 0.4s ease both; }
+
+  .tagcard, .chip, .pop-btn, .nav-pill, .row-del, .chip-del, .sentiment-row button {
+    transition: transform 0.15s ease, background-color 0.2s ease, border-color 0.2s ease,
+                color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .sentiment-row button { box-shadow: 0 2px 8px rgba(34, 48, 60, 0.12); }
+  .sentiment-row button:active:not(:disabled) { transform: scale(0.97); box-shadow: 0 1px 4px rgba(34, 48, 60, 0.1); }
+  .sentiment-row button.btn-pop { animation: btn-pop 0.35s ease; }
+  .tagcard:active, .nav-pill:active { transform: scale(0.97); }
+  .chip:active, .pop-btn:active, .row-del:active, .chip-del:active { transform: scale(0.9); }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation: none !important;
+      transition: none !important;
+    }
+  }
 </style>
 </head>
 <body>
@@ -319,12 +428,24 @@
 
   <header>
     <div class="brand">
-      <svg width="30" height="30" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <circle cx="22" cy="22" r="19" stroke="#2F6F62" stroke-width="2"></circle>
-        <path d="M28 16L19 19L16 28L25 25L28 16Z" fill="#2F6F62"></path>
-        <circle cx="22" cy="22" r="2" fill="#F7F4EF"></circle>
+      <svg class="logo" width="32" height="32" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <circle cx="22" cy="22" r="19" stroke="var(--accent)" stroke-width="2.5"></circle>
+        <g stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round" opacity="0.5">
+          <line x1="22" y1="6.5" x2="22" y2="9.5"></line>
+          <line x1="22" y1="34.5" x2="22" y2="37.5"></line>
+          <line x1="6.5" y1="22" x2="9.5" y2="22"></line>
+          <line x1="34.5" y1="22" x2="37.5" y2="22"></line>
+        </g>
+        <g class="needle">
+          <path d="M22 9.5 L25.6 22 L18.4 22 Z" fill="var(--tag-aspiration)"></path>
+          <path d="M18.4 22 L25.6 22 L22 34.5 Z" fill="var(--accent)"></path>
+        </g>
+        <circle cx="22" cy="22" r="2.4" fill="var(--bg)" stroke="var(--accent)" stroke-width="1.2"></circle>
       </svg>
-      <h1>Livskompas</h1>
+      <div class="brand-text">
+        <h1>Livskompas</h1>
+        <span class="tagline">Quick capture</span>
+      </div>
     </div>
     <button type="button" class="nav-pill" id="navBtn">View all</button>
   </header>
@@ -345,10 +466,14 @@
       <h2>Recent</h2>
       <div id="recentList"></div>
     </div>
+    <div class="empty-hint" id="emptyHint" hidden>
+      <p>Capture the moments that move you — the people you don't want to lose, what you're reaching for, and whatever got in the way.</p>
+      <p class="empty-sub">A few honest seconds, whenever it happens. Small captures compound — and a missed day erases nothing.</p>
+    </div>
   </main>
 
   <main id="overviewView" hidden>
-    <p class="intro">Liked and disliked moments each form a map of who you don't want to lose (Relationship), what pulled you (Inspiration), and what got in the way (Friction). Entries with more than one tag float in the overlap; untagged ones sit on the line below. Click an entry to edit its text; hold focus to change its tags or flip like/dislike.</p>
+    <p class="intro">Liked and disliked moments each form a map of who you don't want to lose (Relationship), what you're reaching for (Aspiration), and what got in the way (Friction). Entries with more than one tag float in the overlap; untagged ones sit on the line below. Click an entry to edit its text; hold focus to change its tags or flip like/dislike.</p>
     <div class="venn-wrap">
       <div class="venn-panel">
         <div class="venn-title like">Liked</div>
@@ -376,38 +501,39 @@
   'use strict';
 
   var STORAGE_KEY = 'livskompas-entries';
-  var PICKER_ORDER = ['relationship', 'inspiration', 'friction'];
-  var ORDER = ['relationship', 'friction', 'inspiration'];
-  var TAG_LABELS = { relationship: 'Relationship', inspiration: 'Inspiration', friction: 'Friction' };
+  var PICKER_ORDER = ['relationship', 'aspiration', 'friction'];
+  var ORDER = ['relationship', 'friction', 'aspiration'];
+  var TAG_LABELS = { relationship: 'Relationship', aspiration: 'Aspiration', friction: 'Friction' };
   var TAG_DESCS = {
     relationship: "someone I don't want to lose",
-    inspiration: 'I want something like that',
+    aspiration: "I'm reaching for something like that",
     friction: 'this got in the way'
   };
-  var TAG_SHORT = { relationship: 'R', friction: 'F', inspiration: 'I' };
+  var TAG_SHORT = { relationship: 'R', friction: 'F', aspiration: 'A' };
   var SOFT_VARS = {
     relationship: 'var(--tag-relationship-soft)',
-    inspiration: 'var(--tag-inspiration-soft)',
+    aspiration: 'var(--tag-aspiration-soft)',
     friction: 'var(--tag-friction-soft)'
   };
   var FG_VARS = {
     relationship: 'var(--tag-relationship)',
-    inspiration: 'var(--tag-inspiration)',
+    aspiration: 'var(--tag-aspiration)',
     friction: 'var(--tag-friction)'
   };
   var VENN_ANCHORS = {
     'relationship': { x: 70, y: 70 },
-    'inspiration': { x: 230, y: 70 },
+    'aspiration': { x: 230, y: 70 },
     'friction': { x: 150, y: 230 },
     'relationship+friction': { x: 95, y: 160 },
-    'friction+inspiration': { x: 205, y: 160 },
-    'relationship+inspiration': { x: 150, y: 60 },
-    'relationship+friction+inspiration': { x: 150, y: 130 }
+    'friction+aspiration': { x: 205, y: 160 },
+    'relationship+aspiration': { x: 150, y: 60 },
+    'relationship+friction+aspiration': { x: 150, y: 130 }
   };
 
   var entries = load();
   var selectedTags = [];
   var view = 'capture';
+  var lastAddedId = null;
 
   var page = document.getElementById('page');
   var navBtn = document.getElementById('navBtn');
@@ -419,6 +545,7 @@
   var dislikeBtn = document.getElementById('dislikeBtn');
   var recentSection = document.getElementById('recentSection');
   var recentList = document.getElementById('recentList');
+  var emptyHint = document.getElementById('emptyHint');
   var vennLike = document.getElementById('vennLike');
   var vennDislike = document.getElementById('vennDislike');
   var generalSection = document.getElementById('generalSection');
@@ -429,7 +556,12 @@
     try {
       var raw = localStorage.getItem(STORAGE_KEY);
       var parsed = raw ? JSON.parse(raw) : [];
-      return Array.isArray(parsed) ? parsed : [];
+      if (!Array.isArray(parsed)) return [];
+      return parsed.map(function (entry) {
+        var tags = Array.isArray(entry.tags) ? entry.tags : [];
+        var mapped = tags.map(function (tag) { return tag === 'inspiration' ? 'aspiration' : tag; });
+        return Object.assign({}, entry, { tags: mapped });
+      });
     } catch (e) {
       return [];
     }
@@ -476,17 +608,27 @@
 
   /* ---- Mutations ---- */
 
+  /* Replays a quick scale-pop on a button as tap feedback. */
+  function btnPop(btn) {
+    btn.classList.remove('btn-pop');
+    void btn.offsetWidth;
+    btn.classList.add('btn-pop');
+  }
+
   function addEntry(sentiment) {
     var text = captureInput.value.trim();
     if (!text) return;
+    var id = Date.now() + '-' + Math.random().toString(36).slice(2, 7);
     entries.unshift({
-      id: Date.now() + '-' + Math.random().toString(36).slice(2, 7),
+      id: id,
       text: text,
       sentiment: sentiment,
       tags: selectedTags.slice(),
       ts: Date.now()
     });
+    lastAddedId = id;
     persist();
+    btnPop(sentiment === 'like' ? likeBtn : dislikeBtn);
     selectedTags = [];
     captureInput.value = '';
     captureInput.style.height = '46px';
@@ -589,10 +731,11 @@
   function renderRecent() {
     var recent = entries.slice(0, 3);
     recentSection.hidden = recent.length === 0;
+    emptyHint.hidden = entries.length !== 0;
     recentList.textContent = '';
     recent.forEach(function (entry) {
       var row = document.createElement('div');
-      row.className = 'recent-row';
+      row.className = 'recent-row' + (entry.id === lastAddedId ? ' row-enter' : '');
 
       var dot = document.createElement('span');
       dot.className = 'dot ' + entry.sentiment;
@@ -659,6 +802,7 @@
 
       recentList.appendChild(row);
     });
+    lastAddedId = null;
   }
 
   /* ---- Overview screen ---- */
@@ -669,7 +813,7 @@
     '<circle cx="190" cy="100" r="85" fill="#B9871F" fill-opacity="0.13" stroke="#B9871F" stroke-width="1.5"></circle>' +
     '<circle cx="150" cy="175" r="85" fill="#5B6E7F" fill-opacity="0.13" stroke="#5B6E7F" stroke-width="1.5"></circle>' +
     '<text x="52" y="42" font-size="12" font-weight="700" fill="#7B5EA7" font-family="-apple-system,sans-serif">Relationship</text>' +
-    '<text x="186" y="42" font-size="12" font-weight="700" fill="#B9871F" font-family="-apple-system,sans-serif">Inspiration</text>' +
+    '<text x="190" y="42" font-size="12" font-weight="700" fill="#B9871F" font-family="-apple-system,sans-serif">Aspiration</text>' +
     '<text x="128" y="253" font-size="12" font-weight="700" fill="#5B6E7F" font-family="-apple-system,sans-serif">Friction</text>' +
     '</svg>';
 
@@ -747,7 +891,7 @@
   function renderVennPanel(box, list) {
     box.innerHTML = VENN_SVG;
     var regionCounts = {};
-    list.forEach(function (entry) {
+    list.forEach(function (entry, i) {
       var key = entryTags(entry).join('+');
       var anchor = VENN_ANCHORS[key] || { x: 150, y: 130 };
       var idx = regionCounts[key] || 0;
@@ -761,6 +905,7 @@
       chip.style.left = (anchor.x / 300) * 100 + '%';
       chip.style.top = (anchor.y / 260) * 100 + '%';
       chip.style.transform = 'translate(-50%, -50%) translate(' + jx + 'px, ' + jy + 'px)';
+      chip.style.animationDelay = Math.min(i * 30, 300) + 'ms';
       box.appendChild(chip);
     });
   }
@@ -777,21 +922,25 @@
     generalSection.hidden = likes.length === 0 && dislikes.length === 0;
     axisAbove.textContent = '';
     axisBelow.textContent = '';
-    likes.forEach(function (entry) {
-      axisAbove.appendChild(buildChip(entry, {
+    likes.forEach(function (entry, i) {
+      var chip = buildChip(entry, {
         inFlow: true,
         popBelow: true,
         maxWidth: '140px',
         inputTransform: 'translateX(' + hashJitter(entry.id, 14) + 'px)'
-      }));
+      });
+      chip.style.animationDelay = Math.min(i * 30, 300) + 'ms';
+      axisAbove.appendChild(chip);
     });
-    dislikes.forEach(function (entry) {
-      axisBelow.appendChild(buildChip(entry, {
+    dislikes.forEach(function (entry, i) {
+      var chip = buildChip(entry, {
         inFlow: true,
         popBelow: false,
         maxWidth: '140px',
         inputTransform: 'translateX(' + hashJitter(entry.id, 14) + 'px)'
-      }));
+      });
+      chip.style.animationDelay = Math.min(i * 30, 300) + 'ms';
+      axisBelow.appendChild(chip);
     });
   }
 
@@ -800,6 +949,10 @@
   navBtn.addEventListener('click', function () {
     view = view === 'capture' ? 'overview' : 'capture';
     render();
+    var incoming = view === 'overview' ? overviewView : captureView;
+    incoming.classList.remove('anim-left', 'anim-right');
+    void incoming.offsetWidth;
+    incoming.classList.add(view === 'overview' ? 'anim-right' : 'anim-left');
     if (view === 'capture') captureInput.focus();
   });
 
@@ -816,6 +969,10 @@
 
   render();
   updateCaptureControls();
+
+  if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+    navigator.serviceWorker.register('sw.js').catch(function () {});
+  }
 })();
 </script>
 </body>

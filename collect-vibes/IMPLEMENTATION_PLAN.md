@@ -7,13 +7,19 @@ Implements the "Quick Capture" design handoff (`Daily note capture app.zip`) as 
 
 ## 1. Stack & file layout
 
-Single self-contained static HTML file, vanilla JS, CSS variables, no build step:
+Static HTML app, vanilla JS, CSS variables, no build step:
 
 ```
 collect-vibes/
-  index.html        # entire app: markup, styles, logic
+  index.html            # entire app: markup, styles, logic
+  manifest.json         # PWA manifest (installable, standalone display)
+  sw.js                 # service worker: network-first page, cache-first assets
+  icon.svg              # app icon source (compass on green, rounded square)
+  icon-192.png          # PWA icon
+  icon-512.png          # PWA icon (also maskable)
+  apple-touch-icon.png  # iOS home-screen icon
   IMPLEMENTATION_PLAN.md
-  Dockerfile        # nginx static image, built/pushed by CI
+  Dockerfile            # nginx static image, built/pushed by CI
 ```
 
 Design tokens live in the `:root` block of `index.html` (they match the handoff 1:1: bg, ink, muted, border, like/dislike, tag colors + softs, shadow) and should stay in sync with `livskompas.dk`.
@@ -23,7 +29,7 @@ Design tokens live in the `:root` block of `index.html` (they match the handoff 
 ```js
 // localStorage key: "livskompas-entries"
 { id: string, text: string, sentiment: "like" | "dislike",
-  tags: string[],   // subset of ["relationship","inspiration","friction"]
+  tags: string[],   // subset of ["relationship","aspiration","friction"]
   ts: number }
 ```
 
@@ -36,15 +42,15 @@ Principle from the research notes: keep the core loop dead simple (type a thing,
 | Element | Handoff copy | New copy |
 |---|---|---|
 | Relationship tag description | "someone to nurture" | "someone I don't want to lose" |
-| Inspiration tag description | "something sparking ideas" | "I want something like that" |
+| Aspiration tag description | "something sparking ideas" | "I'm reaching for something like that" |
 | Friction tag description | "something nagging at you" | "this got in the way" |
 | Tag picker label | "What kind of moment is this? (optional)" | keep — it already signals optionality |
-| Overview intro | "Liked and disliked moments each form their own map…" | "Liked and disliked moments each form a map of who you don't want to lose (Relationship), what pulled you (Inspiration), and what got in the way (Friction). Entries with more than one tag float in the overlap; untagged ones sit on the line below. Click an entry to edit its text; hold focus to change its tags or flip like/dislike." |
+| Overview intro | "Liked and disliked moments each form their own map…" | "Liked and disliked moments each form a map of who you don't want to lose (Relationship), what you're reaching for (Aspiration), and what got in the way (Friction). Entries with more than one tag float in the overlap; untagged ones sit on the line below. Click an entry to edit its text; hold focus to change its tags or flip like/dislike." |
 
 Rationale, so future edits don't drift back:
 
 - **Relationship** = relationships to *preserve*. People systematically underweight relationships when picturing a good life; this bucket exists to counteract that, so the wording is about not losing someone, not generic nurturing.
-- **Inspiration** = *pull*. Captures anchored to a real reaction ("I want something like that") feed the future-self exercise later; the wording should point at the pull, not at "ideas".
+- **Aspiration** = *pull*. Captures anchored to a real reaction ("I'm reaching for something like that") feed the future-self exercise later; the wording should point at the pull, not at "ideas".
 - **Friction** = the seed of obstacle-naming (WOOP). It's more specific than dislike: not "I don't like this" but "this is what's stopping something" / "this drained me". Wording must name obstruction, not annoyance.
 - **No domain taxonomy at capture.** Do not add health/career/finance/etc. categories to this app — clustering into domains happens in the later mapping step. Tags stay optional and minimal; never make them required.
 
@@ -56,7 +62,7 @@ Per handoff spec (high fidelity, recreate pixel-for-pixel): header with compass 
 
 ### Step 2 — Recent list (with sentiment toggle)
 
-Last 3 entries as specified: colored dot, editable text input (blur saves, empty reverts), relative timestamp, always-visible R/I/F tag toggle chips, ✕ delete.
+Last 3 entries as specified: colored dot, editable text input (blur saves, empty reverts), relative timestamp, always-visible R/A/F tag toggle chips, ✕ delete.
 
 **New — sentiment editing "in a similar fashion" to tags:** alongside the three tag chips in each row's meta row, render two sentiment chips, **♡ Like** and **✕ Dislike**, styled exactly like tag chips (active = like/dislike color border + soft bg + colored text; inactive = neutral). Exactly one is always active (radio behavior, not toggle-off). Clicking the inactive one flips `entry.sentiment`, persists, and recolors the row's dot. Soft colors: like `#E5F1E9`, dislike `#F7E9E4`.
 
@@ -64,11 +70,18 @@ Last 3 entries as specified: colored dot, editable text input (blur saves, empty
 
 Per handoff: max-width 760px, intro paragraph (new copy), two Venn panels (Liked / Disliked), 3 circles r=85 at the specified centers/colors, entries as editable chips positioned by tag-combination region with golden-angle spiral + jitter for collisions, multi-tag gradient chips, General x-axis section for untagged entries (liked above the dashed line, disliked below).
 
-**New — sentiment toggle in the focus popover:** the handoff's focus-within popover shows R/F/I circle buttons + a ✕ delete. Add a fourth control in the same popover row: a small circular **♡/✕ swap button** (title: "Move to Disliked" / "Move to Liked") that flips the entry's sentiment and re-renders — the chip jumps to the other Venn panel (or across the General axis line) immediately, same live-rebucket behavior tags already have.
+**New — sentiment toggle in the focus popover:** the handoff's focus-within popover shows R/F/A circle buttons + a ✕ delete. Add a fourth control in the same popover row: a small circular **♡/✕ swap button** (title: "Move to Disliked" / "Move to Liked") that flips the entry's sentiment and re-renders — the chip jumps to the other Venn panel (or across the General axis line) immediately, same live-rebucket behavior tags already have.
 
 ### Step 4 — Shared behaviors
 
 View switching via local state (no routing). Persistence helper wrapping all mutations. Safe-area insets, flex-wrap responsiveness, ≥44px touch targets — all per handoff.
+
+### Step 5 — Native-app polish (added after initial build)
+
+- **PWA:** manifest + service worker + icons, so the app installs to the home screen and works offline. Page fetches are network-first so deploys are picked up immediately; static assets cache-first.
+- **Motion:** load-in rise for header/card/recent, slide transition between capture and overview, pop on the tapped Like/Dislike button, drop-in for the newly added Recent row, staggered fade-in for overview chips, compass-needle settle animation in the logo. All motion is disabled under `prefers-reduced-motion: reduce`.
+- **Touch feel:** sticky blurred header, no tap highlight / text-selection on controls, `touch-action: manipulation`, overscroll containment, `maximum-scale=1` to stop iOS input auto-zoom, press-down scale states on every button.
+- **Empty state** on the capture screen reflecting the research framing: prompts for relationships (who you don't want to lose), aspiration (what you're reaching for), and friction (what got in the way), plus explicit "a missed day erases nothing" anti-streak wording per the habit-formation research note.
 
 ## 5. Deployment
 
