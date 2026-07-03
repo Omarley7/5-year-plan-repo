@@ -7,13 +7,19 @@ Implements the "Quick Capture" design handoff (`Daily note capture app.zip`) as 
 
 ## 1. Stack & file layout
 
-Single self-contained static HTML file, vanilla JS, CSS variables, no build step:
+Static HTML app, vanilla JS, CSS variables, no build step:
 
 ```
 collect-vibes/
-  index.html        # entire app: markup, styles, logic
+  index.html            # entire app: markup, styles, logic
+  manifest.json         # PWA manifest (installable, standalone display)
+  sw.js                 # service worker: network-first page, cache-first assets
+  icon.svg              # app icon source (compass on green, rounded square)
+  icon-192.png          # PWA icon
+  icon-512.png          # PWA icon (also maskable)
+  apple-touch-icon.png  # iOS home-screen icon
   IMPLEMENTATION_PLAN.md
-  Dockerfile        # nginx static image, built/pushed by CI
+  Dockerfile            # nginx static image, built/pushed by CI
 ```
 
 Design tokens live in the `:root` block of `index.html` (they match the handoff 1:1: bg, ink, muted, border, like/dislike, tag colors + softs, shadow) and should stay in sync with `livskompas.dk`.
@@ -69,6 +75,13 @@ Per handoff: max-width 760px, intro paragraph (new copy), two Venn panels (Liked
 ### Step 4 — Shared behaviors
 
 View switching via local state (no routing). Persistence helper wrapping all mutations. Safe-area insets, flex-wrap responsiveness, ≥44px touch targets — all per handoff.
+
+### Step 5 — Native-app polish (added after initial build)
+
+- **PWA:** manifest + service worker + icons, so the app installs to the home screen and works offline. Page fetches are network-first so deploys are picked up immediately; static assets cache-first.
+- **Motion:** load-in rise for header/card/recent, slide transition between capture and overview, pop on the tapped Like/Dislike button, drop-in for the newly added Recent row, staggered fade-in for overview chips, compass-needle settle animation in the logo. All motion is disabled under `prefers-reduced-motion: reduce`.
+- **Touch feel:** sticky blurred header, no tap highlight / text-selection on controls, `touch-action: manipulation`, overscroll containment, `maximum-scale=1` to stop iOS input auto-zoom, press-down scale states on every button.
+- **Empty state** on the capture screen reflecting the research framing: prompts for relationships (who you don't want to lose), aspiration (what you're reaching for), and friction (what got in the way), plus explicit "a missed day erases nothing" anti-streak wording per the habit-formation research note.
 
 ## 5. Deployment
 
