@@ -3,7 +3,7 @@
 # automatically when a new image is pushed to GHCR.
 services:
   collect-vibes:
-    image: ghcr.io/omarley/collect-vibes:latest
+    image: ghcr.io/omarley7/collect-vibes:latest
     ports:
       - "8080:80"
     restart: unless-stopped

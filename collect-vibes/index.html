@@ -570,7 +570,7 @@
 
   function autosize() {
     captureInput.style.height = 'auto';
-    captureInput.style.height = Math.min(captureInput.scrollHeight, 200) + 'px';
+    captureInput.style.height = Math.min(Math.max(captureInput.scrollHeight, 46), 200) + 'px';
   }
 
   captureInput.addEventListener('input', function () {

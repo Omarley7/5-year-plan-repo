@@ -76,7 +76,7 @@ Follows the repo's Docker deployment pattern:
 
 - `collect-vibes/Dockerfile` — nginx:alpine serving `index.html`.
 - Root `docker-compose.yml` — local builds (`build: context: ./collect-vibes`).
-- `deploy/docker-compose.yml` — production server; pre-built GHCR image only (`ghcr.io/omarley/collect-vibes:latest`) with `wud.watch=true` and `wud.trigger.include=docker.local` labels so What's Up Docker pulls + restarts on new pushes.
+- `deploy/docker-compose.yml` — production server; pre-built GHCR image only (`ghcr.io/omarley7/collect-vibes:latest`) with `wud.watch=true` and `wud.trigger.include=docker.local` labels so What's Up Docker pulls + restarts on new pushes.
 - `.github/workflows/docker-publish.yml` — on push to main, builds `linux/amd64,linux/arm64` via Buildx and pushes to GHCR.
 
 When adding a new service, update all three: the workflow file and both compose files.
