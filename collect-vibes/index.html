@@ -18,8 +18,8 @@
     --dislike-soft: #F7E9E4;
     --tag-relationship: #7B5EA7;
     --tag-relationship-soft: #EEE8F5;
-    --tag-inspiration: #B9871F;
-    --tag-inspiration-soft: #F7EFDD;
+    --tag-aspiration: #B9871F;
+    --tag-aspiration-soft: #F7EFDD;
     --tag-friction: #5B6E7F;
     --tag-friction-soft: #E9EDEF;
     --tag-general: #2F6F62;
@@ -109,7 +109,7 @@
   .tagcard .t-label { font-size: 0.85rem; font-weight: 700; }
   .tagcard .t-desc { font-size: 0.72rem; margin-top: 2px; line-height: 1.3; }
   .tagcard.active[data-tag="relationship"] { border-color: var(--tag-relationship); background: var(--tag-relationship-soft); color: var(--tag-relationship); }
-  .tagcard.active[data-tag="inspiration"]  { border-color: var(--tag-inspiration);  background: var(--tag-inspiration-soft);  color: var(--tag-inspiration); }
+  .tagcard.active[data-tag="aspiration"]   { border-color: var(--tag-aspiration);   background: var(--tag-aspiration-soft);   color: var(--tag-aspiration); }
   .tagcard.active[data-tag="friction"]     { border-color: var(--tag-friction);     background: var(--tag-friction-soft);     color: var(--tag-friction); }
 
   #captureInput {
@@ -201,7 +201,7 @@
     font-family: inherit;
   }
   .chip.active[data-tag="relationship"] { border-color: var(--tag-relationship); background: var(--tag-relationship-soft); color: var(--tag-relationship); }
-  .chip.active[data-tag="inspiration"]  { border-color: var(--tag-inspiration);  background: var(--tag-inspiration-soft);  color: var(--tag-inspiration); }
+  .chip.active[data-tag="aspiration"]   { border-color: var(--tag-aspiration);   background: var(--tag-aspiration-soft);   color: var(--tag-aspiration); }
   .chip.active[data-tag="friction"]     { border-color: var(--tag-friction);     background: var(--tag-friction-soft);     color: var(--tag-friction); }
   .chip.active[data-sent="like"]        { border-color: var(--like);    background: var(--like-soft);    color: var(--like); }
   .chip.active[data-sent="dislike"]     { border-color: var(--dislike); background: var(--dislike-soft); color: var(--dislike); }
@@ -291,7 +291,7 @@
     font-family: inherit;
   }
   .pop-btn.active[data-tag="relationship"] { border-color: var(--tag-relationship); background: var(--tag-relationship-soft); color: var(--tag-relationship); }
-  .pop-btn.active[data-tag="inspiration"]  { border-color: var(--tag-inspiration);  background: var(--tag-inspiration-soft);  color: var(--tag-inspiration); }
+  .pop-btn.active[data-tag="aspiration"]   { border-color: var(--tag-aspiration);   background: var(--tag-aspiration-soft);   color: var(--tag-aspiration); }
   .pop-btn.active[data-tag="friction"]     { border-color: var(--tag-friction);     background: var(--tag-friction-soft);     color: var(--tag-friction); }
   .pop-btn.to-like    { border-color: var(--like);    background: var(--like-soft);    color: var(--like); }
   .pop-btn.to-dislike { border-color: var(--dislike); background: var(--dislike-soft); color: var(--dislike); }
@@ -348,7 +348,7 @@
   </main>
 
   <main id="overviewView" hidden>
-    <p class="intro">Liked and disliked moments each form a map of who you don't want to lose (Relationship), what pulled you (Inspiration), and what got in the way (Friction). Entries with more than one tag float in the overlap; untagged ones sit on the line below. Click an entry to edit its text; hold focus to change its tags or flip like/dislike.</p>
+    <p class="intro">Liked and disliked moments each form a map of who you don't want to lose (Relationship), what you're reaching for (Aspiration), and what got in the way (Friction). Entries with more than one tag float in the overlap; untagged ones sit on the line below. Click an entry to edit its text; hold focus to change its tags or flip like/dislike.</p>
     <div class="venn-wrap">
       <div class="venn-panel">
         <div class="venn-title like">Liked</div>
@@ -376,33 +376,33 @@
   'use strict';
 
   var STORAGE_KEY = 'livskompas-entries';
-  var PICKER_ORDER = ['relationship', 'inspiration', 'friction'];
-  var ORDER = ['relationship', 'friction', 'inspiration'];
-  var TAG_LABELS = { relationship: 'Relationship', inspiration: 'Inspiration', friction: 'Friction' };
+  var PICKER_ORDER = ['relationship', 'aspiration', 'friction'];
+  var ORDER = ['relationship', 'friction', 'aspiration'];
+  var TAG_LABELS = { relationship: 'Relationship', aspiration: 'Aspiration', friction: 'Friction' };
   var TAG_DESCS = {
     relationship: "someone I don't want to lose",
-    inspiration: 'I want something like that',
+    aspiration: "I'm reaching for something like that",
     friction: 'this got in the way'
   };
-  var TAG_SHORT = { relationship: 'R', friction: 'F', inspiration: 'I' };
+  var TAG_SHORT = { relationship: 'R', friction: 'F', aspiration: 'A' };
   var SOFT_VARS = {
     relationship: 'var(--tag-relationship-soft)',
-    inspiration: 'var(--tag-inspiration-soft)',
+    aspiration: 'var(--tag-aspiration-soft)',
     friction: 'var(--tag-friction-soft)'
   };
   var FG_VARS = {
     relationship: 'var(--tag-relationship)',
-    inspiration: 'var(--tag-inspiration)',
+    aspiration: 'var(--tag-aspiration)',
     friction: 'var(--tag-friction)'
   };
   var VENN_ANCHORS = {
     'relationship': { x: 70, y: 70 },
-    'inspiration': { x: 230, y: 70 },
+    'aspiration': { x: 230, y: 70 },
     'friction': { x: 150, y: 230 },
     'relationship+friction': { x: 95, y: 160 },
-    'friction+inspiration': { x: 205, y: 160 },
-    'relationship+inspiration': { x: 150, y: 60 },
-    'relationship+friction+inspiration': { x: 150, y: 130 }
+    'friction+aspiration': { x: 205, y: 160 },
+    'relationship+aspiration': { x: 150, y: 60 },
+    'relationship+friction+aspiration': { x: 150, y: 130 }
   };
 
   var entries = load();
@@ -429,7 +429,12 @@
     try {
       var raw = localStorage.getItem(STORAGE_KEY);
       var parsed = raw ? JSON.parse(raw) : [];
-      return Array.isArray(parsed) ? parsed : [];
+      if (!Array.isArray(parsed)) return [];
+      return parsed.map(function (entry) {
+        var tags = Array.isArray(entry.tags) ? entry.tags : [];
+        var mapped = tags.map(function (tag) { return tag === 'inspiration' ? 'aspiration' : tag; });
+        return Object.assign({}, entry, { tags: mapped });
+      });
     } catch (e) {
       return [];
     }

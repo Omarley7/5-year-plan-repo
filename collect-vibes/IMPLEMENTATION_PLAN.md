@@ -23,7 +23,7 @@ Design tokens live in the `:root` block of `index.html` (they match the handoff 
 ```js
 // localStorage key: "livskompas-entries"
 { id: string, text: string, sentiment: "like" | "dislike",
-  tags: string[],   // subset of ["relationship","inspiration","friction"]
+  tags: string[],   // subset of ["relationship","aspiration","friction"]
   ts: number }
 ```
 
@@ -36,15 +36,15 @@ Principle from the research notes: keep the core loop dead simple (type a thing,
 | Element | Handoff copy | New copy |
 |---|---|---|
 | Relationship tag description | "someone to nurture" | "someone I don't want to lose" |
-| Inspiration tag description | "something sparking ideas" | "I want something like that" |
+| Aspiration tag description | "something sparking ideas" | "I'm reaching for something like that" |
 | Friction tag description | "something nagging at you" | "this got in the way" |
 | Tag picker label | "What kind of moment is this? (optional)" | keep — it already signals optionality |
-| Overview intro | "Liked and disliked moments each form their own map…" | "Liked and disliked moments each form a map of who you don't want to lose (Relationship), what pulled you (Inspiration), and what got in the way (Friction). Entries with more than one tag float in the overlap; untagged ones sit on the line below. Click an entry to edit its text; hold focus to change its tags or flip like/dislike." |
+| Overview intro | "Liked and disliked moments each form their own map…" | "Liked and disliked moments each form a map of who you don't want to lose (Relationship), what you're reaching for (Aspiration), and what got in the way (Friction). Entries with more than one tag float in the overlap; untagged ones sit on the line below. Click an entry to edit its text; hold focus to change its tags or flip like/dislike." |
 
 Rationale, so future edits don't drift back:
 
 - **Relationship** = relationships to *preserve*. People systematically underweight relationships when picturing a good life; this bucket exists to counteract that, so the wording is about not losing someone, not generic nurturing.
-- **Inspiration** = *pull*. Captures anchored to a real reaction ("I want something like that") feed the future-self exercise later; the wording should point at the pull, not at "ideas".
+- **Aspiration** = *pull*. Captures anchored to a real reaction ("I'm reaching for something like that") feed the future-self exercise later; the wording should point at the pull, not at "ideas".
 - **Friction** = the seed of obstacle-naming (WOOP). It's more specific than dislike: not "I don't like this" but "this is what's stopping something" / "this drained me". Wording must name obstruction, not annoyance.
 - **No domain taxonomy at capture.** Do not add health/career/finance/etc. categories to this app — clustering into domains happens in the later mapping step. Tags stay optional and minimal; never make them required.
 
@@ -56,7 +56,7 @@ Per handoff spec (high fidelity, recreate pixel-for-pixel): header with compass 
 
 ### Step 2 — Recent list (with sentiment toggle)
 
-Last 3 entries as specified: colored dot, editable text input (blur saves, empty reverts), relative timestamp, always-visible R/I/F tag toggle chips, ✕ delete.
+Last 3 entries as specified: colored dot, editable text input (blur saves, empty reverts), relative timestamp, always-visible R/A/F tag toggle chips, ✕ delete.
 
 **New — sentiment editing "in a similar fashion" to tags:** alongside the three tag chips in each row's meta row, render two sentiment chips, **♡ Like** and **✕ Dislike**, styled exactly like tag chips (active = like/dislike color border + soft bg + colored text; inactive = neutral). Exactly one is always active (radio behavior, not toggle-off). Clicking the inactive one flips `entry.sentiment`, persists, and recolors the row's dot. Soft colors: like `#E5F1E9`, dislike `#F7E9E4`.
 
@@ -64,7 +64,7 @@ Last 3 entries as specified: colored dot, editable text input (blur saves, empty
 
 Per handoff: max-width 760px, intro paragraph (new copy), two Venn panels (Liked / Disliked), 3 circles r=85 at the specified centers/colors, entries as editable chips positioned by tag-combination region with golden-angle spiral + jitter for collisions, multi-tag gradient chips, General x-axis section for untagged entries (liked above the dashed line, disliked below).
 
-**New — sentiment toggle in the focus popover:** the handoff's focus-within popover shows R/F/I circle buttons + a ✕ delete. Add a fourth control in the same popover row: a small circular **♡/✕ swap button** (title: "Move to Disliked" / "Move to Liked") that flips the entry's sentiment and re-renders — the chip jumps to the other Venn panel (or across the General axis line) immediately, same live-rebucket behavior tags already have.
+**New — sentiment toggle in the focus popover:** the handoff's focus-within popover shows R/F/A circle buttons + a ✕ delete. Add a fourth control in the same popover row: a small circular **♡/✕ swap button** (title: "Move to Disliked" / "Move to Liked") that flips the entry's sentiment and re-renders — the chip jumps to the other Venn panel (or across the General axis line) immediately, same live-rebucket behavior tags already have.
 
 ### Step 4 — Shared behaviors
 
