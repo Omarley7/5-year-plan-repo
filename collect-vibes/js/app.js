@@ -19,6 +19,7 @@ var App = (function (Constants, Utils, Data, State, CaptureModule, RecentModule,
   }
 
   function init() {
+    var refreshing = false;
     State.entries = Data.load();
 
     CaptureModule.updateCaptureControls();
@@ -51,7 +52,34 @@ var App = (function (Constants, Utils, Data, State, CaptureModule, RecentModule,
     render();
 
     if ('serviceWorker' in navigator && location.protocol !== 'file:') {
-      navigator.serviceWorker.register('sw.js').catch(function () {});
+      navigator.serviceWorker.addEventListener('controllerchange', function () {
+        if (refreshing) return;
+        refreshing = true;
+        window.location.reload();
+      });
+
+      navigator.serviceWorker.register('sw.js').then(function (registration) {
+        function activateUpdate(worker) {
+          if (!worker) return;
+          worker.postMessage({ type: 'SKIP_WAITING' });
+        }
+
+        if (registration.waiting) activateUpdate(registration.waiting);
+
+        registration.addEventListener('updatefound', function () {
+          var installing = registration.installing;
+          if (!installing) return;
+          installing.addEventListener('statechange', function () {
+            if (installing.state === 'installed' && navigator.serviceWorker.controller) {
+              activateUpdate(installing);
+            }
+          });
+        });
+
+        setInterval(function () {
+          registration.update().catch(function () {});
+        }, 60000);
+      }).catch(function () {});
     }
   }
 
