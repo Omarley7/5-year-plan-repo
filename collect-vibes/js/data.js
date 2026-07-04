@@ -82,9 +82,51 @@ var Data = (function (Constants, Utils) {
     return true;
   }
 
+  function loadUiState() {
+    try {
+      var raw = localStorage.getItem(Constants.UI_STORAGE_KEY);
+      var parsed = raw ? JSON.parse(raw) : {};
+      var activeTab = parsed.activeTab === 'dislike' ? 'dislike' : 'like';
+      var view = parsed.view === 'overview' ? 'overview' : 'capture';
+      var selectedTags = Array.isArray(parsed.selectedTags)
+        ? parsed.selectedTags.filter(function (tag) {
+            return Constants.TAG_ORDER.indexOf(tag) !== -1;
+          })
+        : [];
+      return {
+        activeTab: activeTab,
+        view: view,
+        selectedTags: selectedTags,
+        draftText: typeof parsed.draftText === 'string' ? parsed.draftText : ''
+      };
+    } catch (e) {
+      return {
+        activeTab: 'like',
+        view: 'capture',
+        selectedTags: [],
+        draftText: ''
+      };
+    }
+  }
+
+  function persistUiState(state, draftText) {
+    try {
+      localStorage.setItem(Constants.UI_STORAGE_KEY, JSON.stringify({
+        activeTab: state.activeTab === 'dislike' ? 'dislike' : 'like',
+        view: state.view === 'overview' ? 'overview' : 'capture',
+        selectedTags: Constants.TAG_ORDER.filter(function (tag) {
+          return state.selectedTags.indexOf(tag) !== -1;
+        }),
+        draftText: typeof draftText === 'string' ? draftText : ''
+      }));
+    } catch (e) {}
+  }
+
   return {
     load: load,
+    loadUiState: loadUiState,
     persist: persist,
+    persistUiState: persistUiState,
     findEntry: findEntry,
     addEntry: addEntry,
     deleteEntry: deleteEntry,

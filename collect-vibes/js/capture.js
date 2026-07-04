@@ -6,6 +6,8 @@ var CaptureModule = (function (Constants, Utils, Data, State) {
   var likeBtn = document.getElementById('likeBtn');
   var dislikeBtn = document.getElementById('dislikeBtn');
 
+  var persistUiState = function () {};
+
   function renderPicker() {
     pickerRow.textContent = '';
     Constants.TAG_ORDER.forEach(function (tag) {
@@ -29,6 +31,7 @@ var CaptureModule = (function (Constants, Utils, Data, State) {
           State.selectedTags.splice(i, 1);
         }
         renderPicker();
+        persistUiState();
       });
       pickerRow.appendChild(btn);
     });
@@ -59,10 +62,13 @@ var CaptureModule = (function (Constants, Utils, Data, State) {
     captureInput.focus();
   }
 
-  function init(renderCallback) {
+  function init(renderCallback, persistUiStateCallback) {
+    persistUiState = persistUiStateCallback || function () {};
+
     captureInput.addEventListener('input', function () {
       autosize();
       updateCaptureControls();
+      persistUiState();
     });
 
     captureInput.addEventListener('keydown', function (e) {
@@ -82,6 +88,7 @@ var CaptureModule = (function (Constants, Utils, Data, State) {
   }
 
   return {
+    autosize: autosize,
     renderPicker: renderPicker,
     updateCaptureControls: updateCaptureControls,
     init: init

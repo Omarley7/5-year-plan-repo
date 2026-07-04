@@ -1,7 +1,24 @@
 /* Minimal offline cache: network-first for the page so deploys are picked up
    immediately, cache-first for static assets. */
-var CACHE = 'livskompas-v2';
-var ASSETS = ['./', 'index.html', 'icon.svg', 'manifest.json', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png'];
+var CACHE = 'livskompas-v3';
+var ASSETS = [
+  './',
+  'index.html',
+  'icon.svg',
+  'manifest.json',
+  'icon-192.png',
+  'icon-512.png',
+  'apple-touch-icon.png',
+  'js/constants.js',
+  'js/utils.js',
+  'js/data.js',
+  'js/state.js',
+  'js/capture.js',
+  'js/recent.js',
+  'js/overview.js',
+  'js/overlay.js',
+  'js/app.js'
+];
 
 self.addEventListener('install', function (e) {
   e.waitUntil(caches.open(CACHE).then(function (c) { return c.addAll(ASSETS); }));

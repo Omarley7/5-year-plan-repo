@@ -3,6 +3,7 @@ var Constants = (function () {
 
   return {
     STORAGE_KEY: 'livskompas-entries',
+    UI_STORAGE_KEY: 'livskompas-ui-state',
     TAG_ORDER: ['relationship', 'aspiration', 'friction'],
     TAG_LABELS: {
       relationship: 'Relationship',
