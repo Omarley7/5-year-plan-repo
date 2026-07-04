@@ -72,6 +72,8 @@ Per handoff: max-width 760px, intro paragraph (new copy), two Venn panels (Liked
 
 **New — sentiment toggle in the focus popover:** the handoff's focus-within popover shows R/F/A circle buttons + a ✕ delete. Add a fourth control in the same popover row: a small circular **♡/✕ swap button** (title: "Move to Disliked" / "Move to Liked") that flips the entry's sentiment and re-renders — the chip jumps to the other Venn panel (or across the General axis line) immediately, same live-rebucket behavior tags already have.
 
+> **Superseded (July 2026)** by the "Mobile Tag Interaction Design" handoff: the overview is now a single mobile tag map — Liked/Disliked segmented tabs over one Venn diagram (`mix-blend-mode: multiply` circles), continuously floating entry pills, and a tap-to-edit overlay (Liked/Disliked mood toggle, R/A/F tag bubbles, ✕ delete). Inline text editing remains on the capture screen's Recent list only. The same handoff's warm palette (`#FBF6EE` bg, `#2B2620` ink) and Plus Jakarta Sans are adopted app-wide.
+
 ### Step 4 — Shared behaviors
 
 View switching via local state (no routing). Persistence helper wrapping all mutations. Safe-area insets, flex-wrap responsiveness, ≥44px touch targets — all per handoff.
