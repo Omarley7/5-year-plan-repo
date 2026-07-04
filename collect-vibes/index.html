@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
 <title>Livskompas — Quick Capture</title>
 <meta name="description" content="Quick capture for moments worth keeping: the people you don't want to lose, what you're reaching for, and what got in the way.">
-<meta name="theme-color" content="#F7F4EF">
+<meta name="theme-color" content="#FBF6EE">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -13,29 +13,36 @@
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="manifest" href="manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #F7F4EF;
-    --ink: #22303C;
-    --muted: #6B7A85;
+    --bg: #FBF6EE;
+    --ink: #2B2620;
+    --muted: #8A8071;
     --border: #E4DDD1;
     --surface: #FFFFFF;
-    --accent: #2F6F62;
-    --like: #3E7C59;
-    --like-soft: #E5F1E9;
-    --dislike: #B5533C;
-    --dislike-soft: #F7E9E4;
-    --tag-relationship: #7B5EA7;
-    --tag-relationship-soft: #EEE8F5;
-    --tag-aspiration: #B9871F;
-    --tag-aspiration-soft: #F7EFDD;
-    --tag-friction: #5B6E7F;
-    --tag-friction-soft: #E9EDEF;
-    --tag-general: #2F6F62;
-    --tag-general-soft: #E4EEEA;
-    --placeholder: #9AA7AD;
-    --divider: #D8D0C0;
-    --shadow: 0 1px 2px rgba(34,48,60,.06), 0 4px 16px rgba(34,48,60,.05);
+    --neutral: #F1EBDF;
+    --accent: #2B2620;
+    --like: #3E7A50;
+    --like-soft: #E4EFE7;
+    --dislike: #B3492D;
+    --dislike-soft: #F5E7E1;
+    --tag-relationship: #7C6FAE;
+    --tag-relationship-fill: rgba(124, 111, 174, 0.20);
+    --tag-relationship-soft: #E9E3F6;
+    --tag-relationship-deep: #5B4E8C;
+    --tag-aspiration: #C9972F;
+    --tag-aspiration-fill: rgba(201, 151, 47, 0.20);
+    --tag-aspiration-soft: #F6ECD4;
+    --tag-aspiration-deep: #8C6A1E;
+    --tag-friction: #7A7B85;
+    --tag-friction-fill: rgba(122, 123, 133, 0.20);
+    --tag-friction-soft: #E8E8EC;
+    --tag-friction-deep: #54555E;
+    --placeholder: #ABA091;
+    --shadow: 0 1px 2px rgba(43,38,32,.06), 0 4px 16px rgba(43,38,32,.05);
   }
 
   * { box-sizing: border-box; }
@@ -51,7 +58,7 @@
     min-height: 100dvh;
     background: var(--bg);
     color: var(--ink);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
     -webkit-tap-highlight-color: transparent;
     display: flex;
@@ -71,7 +78,6 @@
     display: flex;
     flex-direction: column;
   }
-  .page.overview { max-width: 760px; }
 
   header {
     position: sticky;
@@ -80,40 +86,51 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin: 0 -16px 18px;
-    padding: calc(14px + env(safe-area-inset-top)) 16px 12px;
-    background: rgba(247, 244, 239, 0.85);
+    margin: 0 -16px 14px;
+    padding: calc(14px + env(safe-area-inset-top)) 20px 12px;
+    background: rgba(251, 246, 238, 0.85);
     -webkit-backdrop-filter: blur(14px) saturate(1.4);
     backdrop-filter: blur(14px) saturate(1.4);
   }
-  .brand { display: flex; align-items: center; gap: 10px; }
+  .brand { display: flex; align-items: center; gap: 12px; }
   .brand-text { display: flex; flex-direction: column; }
-  .brand h1 { font-size: 1.12rem; margin: 0; letter-spacing: -0.01em; font-weight: 700; line-height: 1.1; }
+  .brand h1 { font-size: 18px; margin: 0; letter-spacing: -0.3px; font-weight: 800; line-height: 1.1; }
   .tagline {
-    font-size: 0.62rem;
+    font-size: 10px;
     color: var(--muted);
-    letter-spacing: 0.08em;
+    letter-spacing: 1.2px;
     text-transform: uppercase;
-    font-weight: 600;
-    margin-top: 2px;
+    font-weight: 700;
+    margin-top: 1px;
   }
-  .logo .needle {
-    transform-origin: 22px 22px;
+  .logo-mark {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 2px solid var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .logo-needle {
+    width: 9px;
+    height: 9px;
+    background: linear-gradient(135deg, var(--like) 50%, var(--dislike) 50%);
     transform: rotate(45deg);
-    animation: needle-settle 1.1s cubic-bezier(0.34, 1.4, 0.4, 1) 0.15s both;
   }
   .nav-pill {
     border: 1px solid var(--border);
     background: var(--surface);
     color: var(--accent);
     font-size: 0.85rem;
-    font-weight: 600;
+    font-weight: 700;
     padding: 10px 16px;
     min-height: 40px;
     border-radius: 999px;
     cursor: pointer;
+    font-family: inherit;
   }
-  .page.overview .nav-pill { color: var(--ink); }
 
   /* ---- Capture card ---- */
   .card {
@@ -150,9 +167,9 @@
   .tagcard:hover { border-color: #C9BFA8; }
   .tagcard .t-label { font-size: 0.85rem; font-weight: 700; }
   .tagcard .t-desc { font-size: 0.72rem; margin-top: 2px; line-height: 1.3; }
-  .tagcard.active[data-tag="relationship"] { border-color: var(--tag-relationship); background: var(--tag-relationship-soft); color: var(--tag-relationship); }
-  .tagcard.active[data-tag="aspiration"]   { border-color: var(--tag-aspiration);   background: var(--tag-aspiration-soft);   color: var(--tag-aspiration); }
-  .tagcard.active[data-tag="friction"]     { border-color: var(--tag-friction);     background: var(--tag-friction-soft);     color: var(--tag-friction); }
+  .tagcard.active[data-tag="relationship"] { border-color: var(--tag-relationship); background: var(--tag-relationship-soft); color: var(--tag-relationship-deep); }
+  .tagcard.active[data-tag="aspiration"]   { border-color: var(--tag-aspiration);   background: var(--tag-aspiration-soft);   color: var(--tag-aspiration-deep); }
+  .tagcard.active[data-tag="friction"]     { border-color: var(--tag-friction);     background: var(--tag-friction-soft);     color: var(--tag-friction-deep); }
 
   #captureInput {
     width: 100%;
@@ -242,9 +259,9 @@
     color: var(--placeholder);
     font-family: inherit;
   }
-  .chip.active[data-tag="relationship"] { border-color: var(--tag-relationship); background: var(--tag-relationship-soft); color: var(--tag-relationship); }
-  .chip.active[data-tag="aspiration"]   { border-color: var(--tag-aspiration);   background: var(--tag-aspiration-soft);   color: var(--tag-aspiration); }
-  .chip.active[data-tag="friction"]     { border-color: var(--tag-friction);     background: var(--tag-friction-soft);     color: var(--tag-friction); }
+  .chip.active[data-tag="relationship"] { border-color: var(--tag-relationship); background: var(--tag-relationship-soft); color: var(--tag-relationship-deep); }
+  .chip.active[data-tag="aspiration"]   { border-color: var(--tag-aspiration);   background: var(--tag-aspiration-soft);   color: var(--tag-aspiration-deep); }
+  .chip.active[data-tag="friction"]     { border-color: var(--tag-friction);     background: var(--tag-friction-soft);     color: var(--tag-friction-deep); }
   .chip.active[data-sent="like"]        { border-color: var(--like);    background: var(--like-soft);    color: var(--like); }
   .chip.active[data-sent="dislike"]     { border-color: var(--dislike); background: var(--dislike-soft); color: var(--dislike); }
   .row-del {
@@ -261,99 +278,211 @@
   }
   .row-del:hover { background: var(--bg); color: var(--dislike); }
 
-  /* ---- Overview ---- */
-  .intro { font-size: 0.85rem; color: var(--muted); margin: 0 0 18px; line-height: 1.5; }
-  .venn-wrap { display: flex; gap: 24px; flex-wrap: wrap; }
-  .venn-panel { flex: 1 1 260px; min-width: 230px; }
-  .venn-title { font-size: 0.78rem; font-weight: 700; text-align: center; margin-bottom: 8px; }
-  .venn-title.like { color: var(--like); }
-  .venn-title.dislike { color: var(--dislike); }
-  .venn-box { position: relative; width: 100%; aspect-ratio: 300/260; }
-  .venn-box svg { position: absolute; inset: 0; width: 100%; height: 100%; }
-
-  .qc-chip { position: absolute; }
-  .qc-chip.in-flow { position: relative; }
-  .chip-input {
-    font-size: 0.74rem;
-    line-height: 1.3;
-    padding: 5px 9px;
-    border-radius: 10px;
-    max-width: 130px;
-    text-align: center;
-    cursor: text;
-    border: none;
-    outline: none;
-    font-family: inherit;
-    color: var(--ink);
+  /* ---- Overview: tag map ---- */
+  .intro {
+    font-size: 12.5px;
+    color: var(--muted);
+    margin: -2px 0 16px;
+    padding: 0 4px;
+    line-height: 1.5;
   }
-  .chip-del {
-    opacity: 0;
-    transition: opacity 0.1s ease;
-    position: absolute;
-    top: -6px;
-    right: -6px;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    border: 1px solid var(--border);
-    background: var(--surface);
-    color: var(--dislike);
-    font-size: 0.6rem;
-    line-height: 1;
-    cursor: pointer;
+  .tab-track {
+    display: flex;
+    gap: 6px;
+    background: var(--neutral);
+    border-radius: 999px;
+    padding: 5px;
+    margin: 0 4px 18px;
+  }
+  .tab-btn {
+    flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0;
-  }
-  .qc-chip:focus-within .chip-del { opacity: 1; }
-  .chip-pop {
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.1s ease;
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    gap: 4px;
-    z-index: 5;
-  }
-  .qc-chip:focus-within .chip-pop { opacity: 1; pointer-events: auto; }
-  .pop-btn {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    font-size: 0.62rem;
+    gap: 6px;
+    border: none;
+    border-radius: 999px;
+    padding: 10px 0;
+    font-family: inherit;
+    font-size: 13.5px;
     font-weight: 700;
+    color: var(--muted);
+    background: transparent;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .tab-btn.active { background: var(--surface); box-shadow: 0 2px 6px rgba(0,0,0,0.12); }
+  .tab-btn.active[data-mood="like"] { color: var(--like); }
+  .tab-btn.active[data-mood="dislike"] { color: var(--dislike); }
+  .tab-count {
+    font-size: 10.5px;
+    font-weight: 700;
+    opacity: 0.65;
+    background: rgba(0,0,0,0.06);
+    padding: 1px 6px;
+    border-radius: 999px;
+  }
+
+  .map-outer { padding: 0 4px; }
+  .tag-map { position: relative; width: 100%; padding-top: 96%; }
+  .tag-map .circle {
+    position: absolute;
+    width: 64%;
+    height: 64%;
+    border-radius: 50%;
+    mix-blend-mode: multiply;
+  }
+  .circle-r { left: 2%;  top: 6%;  background: var(--tag-relationship-fill); border: 1.5px solid var(--tag-relationship); }
+  .circle-a { left: 34%; top: 6%;  background: var(--tag-aspiration-fill);   border: 1.5px solid var(--tag-aspiration); }
+  .circle-f { left: 18%; top: 36%; background: var(--tag-friction-fill);     border: 1.5px solid var(--tag-friction); }
+  .map-label { position: absolute; font-size: 13px; font-weight: 800; }
+  .map-label.r { left: 8%;  top: 13%; color: var(--tag-relationship-deep); }
+  .map-label.a { left: 62%; top: 13%; color: var(--tag-aspiration-deep); }
+  .map-label.f { left: 50%; top: 87%; transform: translateX(-50%); color: var(--tag-friction-deep); }
+
+  .vpill-wrap {
+    position: absolute;
+    z-index: 2;
+    animation: chip-fade 0.4s ease both;
+    transition: left 0.5s cubic-bezier(0.3, 0.8, 0.4, 1.1),
+                top 0.5s cubic-bezier(0.3, 0.8, 0.4, 1.1),
+                transform 0.5s cubic-bezier(0.3, 0.8, 0.4, 1.1);
+  }
+  .vpill {
+    border: none;
+    font-family: inherit;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--ink);
+    padding: 8px 12px;
+    border-radius: 14px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.10);
+    cursor: pointer;
+    max-width: 126px;
+    text-align: left;
+    line-height: 1.28;
+    display: inline-block;
+    animation: floaty 6s ease-in-out infinite;
+    transition: opacity 0.25s ease;
+  }
+  .vpill.untagged { max-width: 168px; animation-name: floaty, chip-fade; }
+  #overviewView.dimmed .vpill { opacity: 0.3; }
+  #overviewView.dimmed .vpill.is-selected { opacity: 0; pointer-events: none; }
+
+  .untagged-label {
+    margin: 18px 4px 8px;
+    font-size: 10.5px;
+    font-weight: 800;
+    letter-spacing: 1.1px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .untagged-row { display: flex; flex-wrap: wrap; gap: 10px; padding: 0 4px; }
+
+  /* ---- Entry-selected overlay ---- */
+  .overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    background: rgba(20, 16, 10, 0.44);
+    -webkit-backdrop-filter: blur(3px);
+    backdrop-filter: blur(3px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    padding: 0 28px;
+    animation: backdrop-in 0.22s ease;
+  }
+  .overlay[hidden] { display: none; }
+  .mood-toggle {
+    display: flex;
+    gap: 6px;
+    background: var(--bg);
+    padding: 6px;
+    border-radius: 999px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    animation: pop-in 0.32s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  }
+  .mood-btn {
+    padding: 10px 18px;
+    border-radius: 999px;
+    border: none;
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 13.5px;
+    cursor: pointer;
+    background: transparent;
+    color: var(--muted);
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+  .mood-btn.active[data-mood="like"]    { background: var(--like);    color: #fff; }
+  .mood-btn.active[data-mood="dislike"] { background: var(--dislike); color: #fff; }
+  .overlay-card {
+    position: relative;
+    background: var(--surface);
+    color: var(--ink);
+    padding: 20px 22px;
+    border-radius: 20px;
+    max-width: 260px;
+    min-width: 180px;
+    box-shadow: 0 22px 50px rgba(0,0,0,0.28);
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.4;
+    text-align: center;
+    animation: card-in 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .overlay-del {
+    position: absolute;
+    top: -14px;
+    right: -14px;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: none;
+    background: var(--ink);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 19px;
+    font-weight: 700;
+    line-height: 1;
     padding: 0;
     cursor: pointer;
-    border: 1px solid var(--border);
-    background: var(--surface);
-    color: var(--placeholder);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.32);
+    animation: pop-in 0.3s 0.26s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  }
+  .bubble-row { display: flex; gap: 14px; }
+  .tag-bubble {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-family: inherit;
+    font-weight: 800;
+    font-size: 16px;
+    padding: 0;
+    cursor: pointer;
+    background: var(--surface);
+    border: 2px solid;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+    animation: pop-in 0.32s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
   }
-  .pop-btn.active[data-tag="relationship"] { border-color: var(--tag-relationship); background: var(--tag-relationship-soft); color: var(--tag-relationship); }
-  .pop-btn.active[data-tag="aspiration"]   { border-color: var(--tag-aspiration);   background: var(--tag-aspiration-soft);   color: var(--tag-aspiration); }
-  .pop-btn.active[data-tag="friction"]     { border-color: var(--tag-friction);     background: var(--tag-friction-soft);     color: var(--tag-friction); }
-  .pop-btn.to-like    { border-color: var(--like);    background: var(--like-soft);    color: var(--like); }
-  .pop-btn.to-dislike { border-color: var(--dislike); background: var(--dislike-soft); color: var(--dislike); }
-
-  .general { margin-top: 28px; }
-  .general-title { font-size: 0.78rem; font-weight: 700; color: var(--accent); text-align: center; margin-bottom: 8px; }
-  .axis-box { position: relative; height: 130px; }
-  .axis-line { position: absolute; left: 0; right: 0; top: 50%; border-top: 1px dashed var(--divider); }
-  .axis-above {
-    position: absolute; left: 0; right: 0; bottom: 50%; top: 0;
-    display: flex; flex-direction: row; flex-wrap: wrap-reverse;
-    align-items: flex-end; justify-content: center; gap: 10px;
-    padding-bottom: 4px; overflow: visible;
-  }
-  .axis-below {
-    position: absolute; left: 0; right: 0; top: 50%; bottom: 0;
-    display: flex; flex-direction: row; flex-wrap: wrap;
-    align-items: flex-start; justify-content: center; gap: 10px;
-    padding-top: 4px; overflow: visible;
-  }
+  .tag-bubble:nth-child(1) { animation-delay: 0.08s; }
+  .tag-bubble:nth-child(2) { animation-delay: 0.14s; }
+  .tag-bubble:nth-child(3) { animation-delay: 0.20s; }
+  .tag-bubble[data-tag="relationship"] { border-color: var(--tag-relationship); color: var(--tag-relationship-deep); }
+  .tag-bubble[data-tag="aspiration"]   { border-color: var(--tag-aspiration);   color: var(--tag-aspiration-deep); }
+  .tag-bubble[data-tag="friction"]     { border-color: var(--tag-friction);     color: var(--tag-friction-deep); }
+  .tag-bubble.active[data-tag="relationship"] { background: var(--tag-relationship); color: #fff; box-shadow: 0 6px 16px rgba(124,111,174,0.4); }
+  .tag-bubble.active[data-tag="aspiration"]   { background: var(--tag-aspiration);   color: #fff; box-shadow: 0 6px 16px rgba(201,151,47,0.4); }
+  .tag-bubble.active[data-tag="friction"]     { background: var(--tag-friction);     color: #fff; box-shadow: 0 6px 16px rgba(122,123,133,0.4); }
 
   /* ---- Empty state ---- */
   .empty-hint {
@@ -392,9 +521,24 @@
     from { opacity: 0; }
     to { opacity: 1; }
   }
-  @keyframes needle-settle {
-    from { transform: rotate(-315deg); }
-    to { transform: rotate(45deg); }
+  @keyframes floaty {
+    0% { transform: translate(0, 0) rotate(0deg); }
+    33% { transform: translate(3px, -7px) rotate(1.6deg); }
+    66% { transform: translate(-4px, 4px) rotate(-1.3deg); }
+    100% { transform: translate(0, 0) rotate(0deg); }
+  }
+  @keyframes pop-in {
+    0% { opacity: 0; transform: scale(0.4) translateY(6px); }
+    70% { opacity: 1; transform: scale(1.08) translateY(0); }
+    100% { opacity: 1; transform: scale(1) translateY(0); }
+  }
+  @keyframes card-in {
+    0% { opacity: 0; transform: scale(0.82); }
+    100% { opacity: 1; transform: scale(1); }
+  }
+  @keyframes backdrop-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
   }
 
   header { animation: rise-in 0.4s ease both; }
@@ -403,17 +547,16 @@
   main.anim-right { animation: slide-in-right 0.32s cubic-bezier(0.25, 0.8, 0.35, 1) both; }
   main.anim-left { animation: slide-in-left 0.32s cubic-bezier(0.25, 0.8, 0.35, 1) both; }
   .recent-row.row-enter { animation: row-enter 0.4s cubic-bezier(0.2, 0.8, 0.3, 1.1) both; }
-  .qc-chip { animation: chip-fade 0.4s ease both; }
 
-  .tagcard, .chip, .pop-btn, .nav-pill, .row-del, .chip-del, .sentiment-row button {
+  .tagcard, .chip, .nav-pill, .row-del, .sentiment-row button {
     transition: transform 0.15s ease, background-color 0.2s ease, border-color 0.2s ease,
                 color 0.2s ease, box-shadow 0.2s ease;
   }
-  .sentiment-row button { box-shadow: 0 2px 8px rgba(34, 48, 60, 0.12); }
-  .sentiment-row button:active:not(:disabled) { transform: scale(0.97); box-shadow: 0 1px 4px rgba(34, 48, 60, 0.1); }
+  .sentiment-row button { box-shadow: 0 2px 8px rgba(43, 38, 32, 0.12); }
+  .sentiment-row button:active:not(:disabled) { transform: scale(0.97); box-shadow: 0 1px 4px rgba(43, 38, 32, 0.1); }
   .sentiment-row button.btn-pop { animation: btn-pop 0.35s ease; }
   .tagcard:active, .nav-pill:active { transform: scale(0.97); }
-  .chip:active, .pop-btn:active, .row-del:active, .chip-del:active { transform: scale(0.9); }
+  .chip:active, .row-del:active { transform: scale(0.9); }
 
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
@@ -428,20 +571,7 @@
 
   <header>
     <div class="brand">
-      <svg class="logo" width="32" height="32" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <circle cx="22" cy="22" r="19" stroke="var(--accent)" stroke-width="2.5"></circle>
-        <g stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round" opacity="0.5">
-          <line x1="22" y1="6.5" x2="22" y2="9.5"></line>
-          <line x1="22" y1="34.5" x2="22" y2="37.5"></line>
-          <line x1="6.5" y1="22" x2="9.5" y2="22"></line>
-          <line x1="34.5" y1="22" x2="37.5" y2="22"></line>
-        </g>
-        <g class="needle">
-          <path d="M22 9.5 L25.6 22 L18.4 22 Z" fill="var(--tag-aspiration)"></path>
-          <path d="M18.4 22 L25.6 22 L22 34.5 Z" fill="var(--accent)"></path>
-        </g>
-        <circle cx="22" cy="22" r="2.4" fill="var(--bg)" stroke="var(--accent)" stroke-width="1.2"></circle>
-      </svg>
+      <div class="logo-mark" aria-hidden="true"><div class="logo-needle"></div></div>
       <div class="brand-text">
         <h1>Livskompas</h1>
         <span class="tagline">Quick capture</span>
@@ -473,27 +603,41 @@
   </main>
 
   <main id="overviewView" hidden>
-    <p class="intro">Liked and disliked moments each form a map of who you don't want to lose (Relationship), what you're reaching for (Aspiration), and what got in the way (Friction). Entries with more than one tag float in the overlap; untagged ones sit on the line below. Click an entry to edit its text; hold focus to change its tags or flip like/dislike.</p>
-    <div class="venn-wrap">
-      <div class="venn-panel">
-        <div class="venn-title like">Liked</div>
-        <div class="venn-box" id="vennLike"></div>
-      </div>
-      <div class="venn-panel">
-        <div class="venn-title dislike">Disliked</div>
-        <div class="venn-box" id="vennDislike"></div>
+    <p class="intro">Tap an entry to edit its mood and tags.</p>
+    <div class="tab-track">
+      <button type="button" class="tab-btn" data-mood="like" id="tabLike">Liked <span class="tab-count" id="tabLikeCount">0</span></button>
+      <button type="button" class="tab-btn" data-mood="dislike" id="tabDislike">Disliked <span class="tab-count" id="tabDislikeCount">0</span></button>
+    </div>
+    <div class="map-outer">
+      <div class="tag-map" id="tagMap">
+        <div class="circle circle-f"></div>
+        <div class="circle circle-r"></div>
+        <div class="circle circle-a"></div>
+        <div class="map-label r">Relationship</div>
+        <div class="map-label a">Aspiration</div>
+        <div class="map-label f">Friction</div>
       </div>
     </div>
-    <div class="general" id="generalSection" hidden>
-      <div class="general-title">General</div>
-      <div class="axis-box">
-        <div class="axis-line"></div>
-        <div class="axis-above" id="axisAbove"></div>
-        <div class="axis-below" id="axisBelow"></div>
-      </div>
-    </div>
+    <div class="untagged-label" id="untaggedLabel" hidden>Untagged</div>
+    <div class="untagged-row" id="untaggedRow" hidden></div>
   </main>
 
+</div>
+
+<div class="overlay" id="entryOverlay" hidden>
+  <div class="mood-toggle" id="moodToggle">
+    <button type="button" class="mood-btn" data-mood="like" id="moodLikeBtn">Liked</button>
+    <button type="button" class="mood-btn" data-mood="dislike" id="moodDislikeBtn">Disliked</button>
+  </div>
+  <div class="overlay-card" id="overlayCard">
+    <button type="button" class="overlay-del" id="overlayDelBtn" title="Delete">&times;</button>
+    <div id="overlayText"></div>
+  </div>
+  <div class="bubble-row" id="bubbleRow">
+    <button type="button" class="tag-bubble" data-tag="relationship" title="Relationship">R</button>
+    <button type="button" class="tag-bubble" data-tag="aspiration" title="Aspiration">A</button>
+    <button type="button" class="tag-bubble" data-tag="friction" title="Friction">F</button>
+  </div>
 </div>
 
 <script>
@@ -501,41 +645,36 @@
   'use strict';
 
   var STORAGE_KEY = 'livskompas-entries';
-  var PICKER_ORDER = ['relationship', 'aspiration', 'friction'];
-  var ORDER = ['relationship', 'friction', 'aspiration'];
+  var TAG_ORDER = ['relationship', 'aspiration', 'friction'];
   var TAG_LABELS = { relationship: 'Relationship', aspiration: 'Aspiration', friction: 'Friction' };
   var TAG_DESCS = {
     relationship: "someone I don't want to lose",
     aspiration: "I'm reaching for something like that",
     friction: 'this got in the way'
   };
-  var TAG_SHORT = { relationship: 'R', friction: 'F', aspiration: 'A' };
   var SOFT_VARS = {
     relationship: 'var(--tag-relationship-soft)',
     aspiration: 'var(--tag-aspiration-soft)',
     friction: 'var(--tag-friction-soft)'
   };
-  var FG_VARS = {
-    relationship: 'var(--tag-relationship)',
-    aspiration: 'var(--tag-aspiration)',
-    friction: 'var(--tag-friction)'
-  };
-  var VENN_ANCHORS = {
-    'relationship': { x: 70, y: 70 },
-    'aspiration': { x: 230, y: 70 },
-    'friction': { x: 150, y: 230 },
-    'relationship+friction': { x: 95, y: 160 },
-    'friction+aspiration': { x: 205, y: 160 },
-    'relationship+aspiration': { x: 150, y: 60 },
-    'relationship+friction+aspiration': { x: 150, y: 130 }
+  /* Anchor points (in % of the map box) for the 7 tag-combination regions. */
+  var REGIONS = {
+    'relationship': { x: 15, y: 26 },
+    'aspiration': { x: 85, y: 26 },
+    'friction': { x: 50, y: 92 },
+    'relationship+aspiration': { x: 50, y: 21 },
+    'relationship+friction': { x: 25, y: 60 },
+    'aspiration+friction': { x: 75, y: 60 },
+    'relationship+aspiration+friction': { x: 50, y: 49 }
   };
 
   var entries = load();
   var selectedTags = [];
   var view = 'capture';
+  var activeTab = 'like';
+  var selectedId = null;
   var lastAddedId = null;
 
-  var page = document.getElementById('page');
   var navBtn = document.getElementById('navBtn');
   var captureView = document.getElementById('captureView');
   var overviewView = document.getElementById('overviewView');
@@ -546,11 +685,22 @@
   var recentSection = document.getElementById('recentSection');
   var recentList = document.getElementById('recentList');
   var emptyHint = document.getElementById('emptyHint');
-  var vennLike = document.getElementById('vennLike');
-  var vennDislike = document.getElementById('vennDislike');
-  var generalSection = document.getElementById('generalSection');
-  var axisAbove = document.getElementById('axisAbove');
-  var axisBelow = document.getElementById('axisBelow');
+  var tabLike = document.getElementById('tabLike');
+  var tabDislike = document.getElementById('tabDislike');
+  var tabLikeCount = document.getElementById('tabLikeCount');
+  var tabDislikeCount = document.getElementById('tabDislikeCount');
+  var tagMap = document.getElementById('tagMap');
+  var untaggedLabel = document.getElementById('untaggedLabel');
+  var untaggedRow = document.getElementById('untaggedRow');
+  var entryOverlay = document.getElementById('entryOverlay');
+  var moodToggle = document.getElementById('moodToggle');
+  var moodLikeBtn = document.getElementById('moodLikeBtn');
+  var moodDislikeBtn = document.getElementById('moodDislikeBtn');
+  var overlayCard = document.getElementById('overlayCard');
+  var overlayDelBtn = document.getElementById('overlayDelBtn');
+  var overlayText = document.getElementById('overlayText');
+  var bubbleRow = document.getElementById('bubbleRow');
+  var tagBubbles = Array.prototype.slice.call(bubbleRow.querySelectorAll('.tag-bubble'));
 
   function load() {
     try {
@@ -576,10 +726,10 @@
     return null;
   }
 
-  function hashJitter(id, range) {
+  function hashStr(s) {
     var h = 0;
-    for (var i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) | 0;
-    return (Math.abs(h) % (range * 2 + 1)) - range;
+    for (var i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0;
+    return Math.abs(h);
   }
 
   function relativeTime(ts) {
@@ -595,15 +745,15 @@
   }
 
   function entryTags(entry) {
-    return ORDER.filter(function (t) { return (entry.tags || []).indexOf(t) !== -1; });
+    return TAG_ORDER.filter(function (t) { return (entry.tags || []).indexOf(t) !== -1; });
   }
 
-  function chipColors(entry) {
+  function pillBackground(entry) {
     var set = entryTags(entry);
-    if (set.length === 0) return { bg: 'var(--tag-general-soft)', fg: 'var(--tag-general)' };
-    if (set.length === 1) return { bg: SOFT_VARS[set[0]], fg: FG_VARS[set[0]] };
+    if (set.length === 0) return 'var(--neutral)';
+    if (set.length === 1) return SOFT_VARS[set[0]];
     var stops = set.map(function (t) { return SOFT_VARS[t]; }).join(', ');
-    return { bg: 'linear-gradient(135deg, ' + stops + ')', fg: 'var(--ink)' };
+    return 'linear-gradient(135deg, ' + stops + ')';
   }
 
   /* ---- Mutations ---- */
@@ -682,7 +832,7 @@
 
   function renderPicker() {
     pickerRow.textContent = '';
-    PICKER_ORDER.forEach(function (tag) {
+    TAG_ORDER.forEach(function (tag) {
       var btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'tagcard' + (selectedTags.indexOf(tag) !== -1 ? ' active' : '');
@@ -761,7 +911,7 @@
       time.textContent = relativeTime(entry.ts);
       meta.appendChild(time);
 
-      ORDER.forEach(function (tag) {
+      TAG_ORDER.forEach(function (tag) {
         var chip = document.createElement('button');
         chip.type = 'button';
         chip.className = 'chip' + ((entry.tags || []).indexOf(tag) !== -1 ? ' active' : '');
@@ -805,146 +955,174 @@
     lastAddedId = null;
   }
 
-  /* ---- Overview screen ---- */
+  /* ---- Overview: tag map ---- */
 
-  var VENN_SVG =
-    '<svg viewBox="0 0 300 260">' +
-    '<circle cx="110" cy="100" r="85" fill="#7B5EA7" fill-opacity="0.13" stroke="#7B5EA7" stroke-width="1.5"></circle>' +
-    '<circle cx="190" cy="100" r="85" fill="#B9871F" fill-opacity="0.13" stroke="#B9871F" stroke-width="1.5"></circle>' +
-    '<circle cx="150" cy="175" r="85" fill="#5B6E7F" fill-opacity="0.13" stroke="#5B6E7F" stroke-width="1.5"></circle>' +
-    '<text x="52" y="42" font-size="12" font-weight="700" fill="#7B5EA7" font-family="-apple-system,sans-serif">Relationship</text>' +
-    '<text x="190" y="42" font-size="12" font-weight="700" fill="#B9871F" font-family="-apple-system,sans-serif">Aspiration</text>' +
-    '<text x="128" y="253" font-size="12" font-weight="700" fill="#5B6E7F" font-family="-apple-system,sans-serif">Friction</text>' +
-    '</svg>';
+  /* Keyed pill elements survive re-renders so the idle float never restarts
+     and position changes animate via the wrap's left/top/transform transition. */
+  var mapPills = {};      // id -> wrap element (absolute, in the tag map)
+  var untaggedPills = {}; // id -> pill button (in-flow, untagged row)
 
-  function buildChip(entry, opts) {
-    var wrap = document.createElement('div');
-    wrap.className = 'qc-chip' + (opts.inFlow ? ' in-flow' : '');
-
-    var input = document.createElement('input');
-    input.type = 'text';
-    input.className = 'chip-input';
-    input.maxLength = 280;
-    input.value = entry.text;
-    var colors = chipColors(entry);
-    input.style.background = colors.bg;
-    input.style.color = colors.fg;
-    input.style.width = Math.min(Math.max(entry.text.length, 4) + 3, 20) + 'ch';
-    if (opts.maxWidth) input.style.maxWidth = opts.maxWidth;
-    if (opts.inputTransform) input.style.transform = opts.inputTransform;
-    input.addEventListener('blur', function () {
-      if (commitText(entry, input)) render();
-    });
-    wrap.appendChild(input);
-
-    var del = document.createElement('button');
-    del.type = 'button';
-    del.className = 'chip-del';
-    del.title = 'Delete';
-    del.textContent = '✕';
-    holdFocus(del);
-    del.addEventListener('click', function () { deleteEntry(entry.id); });
-    wrap.appendChild(del);
-
-    var pop = document.createElement('div');
-    pop.className = 'chip-pop';
-    if (opts.popBelow) {
-      pop.style.top = '100%';
-      pop.style.marginTop = '5px';
-    } else {
-      pop.style.bottom = '100%';
-      pop.style.marginBottom = '5px';
-    }
-
-    ORDER.forEach(function (tag) {
-      var btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'pop-btn' + ((entry.tags || []).indexOf(tag) !== -1 ? ' active' : '');
-      btn.dataset.tag = tag;
-      btn.title = TAG_LABELS[tag];
-      btn.textContent = TAG_SHORT[tag];
-      holdFocus(btn);
-      btn.addEventListener('click', function () {
-        commitText(entry, input);
-        toggleEntryTag(entry.id, tag);
-      });
-      pop.appendChild(btn);
-    });
-
-    var flip = document.createElement('button');
-    flip.type = 'button';
-    var toDislike = entry.sentiment === 'like';
-    flip.className = 'pop-btn ' + (toDislike ? 'to-dislike' : 'to-like');
-    flip.title = toDislike ? 'Move to Disliked' : 'Move to Liked';
-    flip.textContent = toDislike ? '✕' : '♡';
-    holdFocus(flip);
-    flip.addEventListener('click', function () {
-      commitText(entry, input);
-      setEntrySentiment(entry.id, toDislike ? 'dislike' : 'like');
-    });
-    pop.appendChild(flip);
-
-    wrap.appendChild(pop);
-    return wrap;
+  function makePill(id, untagged) {
+    var pill = document.createElement('button');
+    pill.type = 'button';
+    pill.className = 'vpill' + (untagged ? ' untagged' : '');
+    var seed = hashStr(id);
+    pill.style.animationDuration = (5 + (seed % 400) / 100).toFixed(2) + 's';
+    pill.style.animationDelay = ((seed % 500) / 100).toFixed(2) + 's';
+    pill.addEventListener('click', function () { openOverlay(id); });
+    return pill;
   }
 
-  function renderVennPanel(box, list) {
-    box.innerHTML = VENN_SVG;
-    var regionCounts = {};
-    list.forEach(function (entry, i) {
-      var key = entryTags(entry).join('+');
-      var anchor = VENN_ANCHORS[key] || { x: 150, y: 130 };
-      var idx = regionCounts[key] || 0;
-      regionCounts[key] = idx + 1;
-      var angle = idx * 137.5 * (Math.PI / 180) + (hashJitter(entry.id, 100) * Math.PI) / 100;
-      var radius = 9 * Math.sqrt(idx);
-      var jx = Math.cos(angle) * radius;
-      var jy = Math.sin(angle) * radius;
+  function syncPill(pill, entry) {
+    pill.textContent = entry.text;
+    pill.style.background = pillBackground(entry);
+    pill.classList.toggle('is-selected', entry.id === selectedId);
+  }
 
-      var chip = buildChip(entry, { popBelow: true });
-      chip.style.left = (anchor.x / 300) * 100 + '%';
-      chip.style.top = (anchor.y / 260) * 100 + '%';
-      chip.style.transform = 'translate(-50%, -50%) translate(' + jx + 'px, ' + jy + 'px)';
-      chip.style.animationDelay = Math.min(i * 30, 300) + 'ms';
-      box.appendChild(chip);
+  function renderTagMap() {
+    var wantLike = activeTab === 'like';
+    var inTab = entries.filter(function (e) { return (e.sentiment === 'like') === wantLike; });
+    var tagged = inTab.filter(function (e) { return entryTags(e).length > 0; });
+    var untagged = inTab.filter(function (e) { return entryTags(e).length === 0; });
+
+    /* Tabs */
+    tabLikeCount.textContent = entries.filter(function (e) { return e.sentiment === 'like'; }).length;
+    tabDislikeCount.textContent = entries.filter(function (e) { return e.sentiment !== 'like'; }).length;
+    tabLike.classList.toggle('active', wantLike);
+    tabDislike.classList.toggle('active', !wantLike);
+
+    /* Group tagged entries into diagram regions and lay out stacks. */
+    var groups = {};
+    tagged.forEach(function (e) {
+      var key = entryTags(e).join('+');
+      (groups[key] = groups[key] || []).push(e);
+    });
+    var placed = {};
+    Object.keys(groups).forEach(function (key) {
+      var region = REGIONS[key];
+      if (!region) return;
+      var arr = groups[key];
+      arr.forEach(function (e, i) {
+        placed[e.id] = {
+          x: region.x,
+          y: region.y,
+          offX: (i - (arr.length - 1) / 2) * 46,
+          offY: (i % 2 === 0 ? -1 : 1) * (8 + i * 3)
+        };
+      });
+    });
+
+    Object.keys(mapPills).forEach(function (id) {
+      if (!placed[id]) {
+        tagMap.removeChild(mapPills[id]);
+        delete mapPills[id];
+      }
+    });
+    Object.keys(placed).forEach(function (id) {
+      var entry = findEntry(id);
+      var pos = placed[id];
+      var wrap = mapPills[id];
+      if (!wrap) {
+        wrap = document.createElement('div');
+        wrap.className = 'vpill-wrap';
+        wrap.appendChild(makePill(id, false));
+        tagMap.appendChild(wrap);
+        mapPills[id] = wrap;
+      }
+      var rot = ((hashStr(id) % 100) / 100 - 0.5) * 10;
+      wrap.style.left = pos.x + '%';
+      wrap.style.top = pos.y + '%';
+      wrap.style.transform = 'translate(-50%,-50%) translate(' + pos.offX + 'px,' + pos.offY + 'px) rotate(' + rot.toFixed(1) + 'deg)';
+      syncPill(wrap.firstChild, entry);
+    });
+
+    /* Untagged row */
+    untaggedLabel.hidden = untagged.length === 0;
+    untaggedRow.hidden = untagged.length === 0;
+    var want = {};
+    untagged.forEach(function (e) { want[e.id] = true; });
+    Object.keys(untaggedPills).forEach(function (id) {
+      if (!want[id]) {
+        untaggedRow.removeChild(untaggedPills[id]);
+        delete untaggedPills[id];
+      }
+    });
+    untagged.forEach(function (e) {
+      var pill = untaggedPills[e.id];
+      if (!pill) {
+        pill = makePill(e.id, true);
+        untaggedRow.appendChild(pill);
+        untaggedPills[e.id] = pill;
+      }
+      syncPill(pill, e);
+    });
+
+    overviewView.classList.toggle('dimmed', !!selectedId);
+  }
+
+  /* ---- Entry-selected overlay ---- */
+
+  function syncOverlay() {
+    var entry = findEntry(selectedId);
+    if (!entry) return;
+    overlayText.textContent = entry.text;
+    moodLikeBtn.classList.toggle('active', entry.sentiment === 'like');
+    moodDislikeBtn.classList.toggle('active', entry.sentiment !== 'like');
+    tagBubbles.forEach(function (b) {
+      b.classList.toggle('active', (entry.tags || []).indexOf(b.dataset.tag) !== -1);
     });
   }
 
-  function renderOverview() {
-    var tagged = entries.filter(function (e) { return entryTags(e).length > 0; });
-    var general = entries.filter(function (e) { return entryTags(e).length === 0; });
-
-    renderVennPanel(vennLike, tagged.filter(function (e) { return e.sentiment === 'like'; }));
-    renderVennPanel(vennDislike, tagged.filter(function (e) { return e.sentiment === 'dislike'; }));
-
-    var likes = general.filter(function (e) { return e.sentiment === 'like'; }).slice(0, 14);
-    var dislikes = general.filter(function (e) { return e.sentiment === 'dislike'; }).slice(0, 14);
-    generalSection.hidden = likes.length === 0 && dislikes.length === 0;
-    axisAbove.textContent = '';
-    axisBelow.textContent = '';
-    likes.forEach(function (entry, i) {
-      var chip = buildChip(entry, {
-        inFlow: true,
-        popBelow: true,
-        maxWidth: '140px',
-        inputTransform: 'translateX(' + hashJitter(entry.id, 14) + 'px)'
-      });
-      chip.style.animationDelay = Math.min(i * 30, 300) + 'ms';
-      axisAbove.appendChild(chip);
-    });
-    dislikes.forEach(function (entry, i) {
-      var chip = buildChip(entry, {
-        inFlow: true,
-        popBelow: false,
-        maxWidth: '140px',
-        inputTransform: 'translateX(' + hashJitter(entry.id, 14) + 'px)'
-      });
-      chip.style.animationDelay = Math.min(i * 30, 300) + 'ms';
-      axisBelow.appendChild(chip);
-    });
+  function openOverlay(id) {
+    selectedId = id;
+    syncOverlay();
+    entryOverlay.hidden = false;
+    renderTagMap();
   }
+
+  function closeOverlay() {
+    selectedId = null;
+    entryOverlay.hidden = true;
+    renderTagMap();
+  }
+
+  entryOverlay.addEventListener('click', closeOverlay);
+  [moodToggle, overlayCard, bubbleRow].forEach(function (el) {
+    el.addEventListener('click', function (e) { e.stopPropagation(); });
+  });
+  moodLikeBtn.addEventListener('click', function () {
+    setEntrySentiment(selectedId, 'like');
+    syncOverlay();
+  });
+  moodDislikeBtn.addEventListener('click', function () {
+    setEntrySentiment(selectedId, 'dislike');
+    syncOverlay();
+  });
+  tagBubbles.forEach(function (b) {
+    b.addEventListener('click', function () {
+      toggleEntryTag(selectedId, b.dataset.tag);
+      syncOverlay();
+    });
+  });
+  overlayDelBtn.addEventListener('click', function () {
+    var id = selectedId;
+    selectedId = null;
+    entryOverlay.hidden = true;
+    deleteEntry(id);
+  });
 
   /* ---- View switching ---- */
+
+  tabLike.addEventListener('click', function () {
+    if (activeTab === 'like') return;
+    activeTab = 'like';
+    renderTagMap();
+  });
+  tabDislike.addEventListener('click', function () {
+    if (activeTab === 'dislike') return;
+    activeTab = 'dislike';
+    renderTagMap();
+  });
 
   navBtn.addEventListener('click', function () {
     view = view === 'capture' ? 'overview' : 'capture';
@@ -958,13 +1136,12 @@
 
   function render() {
     var overview = view === 'overview';
-    page.classList.toggle('overview', overview);
     navBtn.textContent = overview ? '← Capture' : 'View all';
     captureView.hidden = overview;
     overviewView.hidden = !overview;
     renderPicker();
     renderRecent();
-    if (overview) renderOverview();
+    if (overview) renderTagMap();
   }
 
   render();

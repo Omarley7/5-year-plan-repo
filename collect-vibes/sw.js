@@ -1,6 +1,6 @@
 /* Minimal offline cache: network-first for the page so deploys are picked up
    immediately, cache-first for static assets. */
-var CACHE = 'livskompas-v1';
+var CACHE = 'livskompas-v2';
 var ASSETS = ['./', 'index.html', 'icon.svg', 'manifest.json', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png'];
 
 self.addEventListener('install', function (e) {
