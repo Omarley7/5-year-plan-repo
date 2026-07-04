@@ -1,653 +1,1091 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
-<title>Livskompas — Quick Capture</title>
-<meta name="description" content="Quick capture for moments worth keeping: the people you don't want to lose, what you're reaching for, and what got in the way.">
-<meta name="theme-color" content="#FBF6EE">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Livskompas">
-<link rel="icon" href="icon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="manifest" href="manifest.json">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --bg: #FBF6EE;
-    --ink: #2B2620;
-    --muted: #8A8071;
-    --border: #E4DDD1;
-    --surface: #FFFFFF;
-    --neutral: #F1EBDF;
-    --accent: #2B2620;
-    --like: #3E7A50;
-    --like-soft: #E4EFE7;
-    --dislike: #B3492D;
-    --dislike-soft: #F5E7E1;
-    --tag-relationship: #7C6FAE;
-    --tag-relationship-fill: rgba(124, 111, 174, 0.20);
-    --tag-relationship-soft: #E9E3F6;
-    --tag-relationship-deep: #5B4E8C;
-    --tag-aspiration: #C9972F;
-    --tag-aspiration-fill: rgba(201, 151, 47, 0.20);
-    --tag-aspiration-soft: #F6ECD4;
-    --tag-aspiration-deep: #8C6A1E;
-    --tag-friction: #7A7B85;
-    --tag-friction-fill: rgba(122, 123, 133, 0.20);
-    --tag-friction-soft: #E8E8EC;
-    --tag-friction-deep: #54555E;
-    --placeholder: #ABA091;
-    --shadow: 0 1px 2px rgba(43,38,32,.06), 0 4px 16px rgba(43,38,32,.05);
-  }
-
-  * { box-sizing: border-box; }
-
-  html {
-    overscroll-behavior: none;
-    -webkit-text-size-adjust: 100%;
-  }
-
-  body {
-    margin: 0;
-    min-height: 100vh;
-    min-height: 100dvh;
-    background: var(--bg);
-    color: var(--ink);
-    font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -webkit-tap-highlight-color: transparent;
-    display: flex;
-    justify-content: center;
-  }
-
-  button {
-    touch-action: manipulation;
-    -webkit-user-select: none;
-    user-select: none;
-  }
-
-  .page {
-    width: 100%;
-    max-width: 480px;
-    padding: 0 16px calc(32px + env(safe-area-inset-bottom));
-    display: flex;
-    flex-direction: column;
-  }
-
-  header {
-    position: sticky;
-    top: 0;
-    z-index: 20;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin: 0 -16px 14px;
-    padding: calc(14px + env(safe-area-inset-top)) 20px 12px;
-    background: rgba(251, 246, 238, 0.85);
-    -webkit-backdrop-filter: blur(14px) saturate(1.4);
-    backdrop-filter: blur(14px) saturate(1.4);
-  }
-  .brand { display: flex; align-items: center; gap: 12px; }
-  .brand-text { display: flex; flex-direction: column; }
-  .brand h1 { font-size: 18px; margin: 0; letter-spacing: -0.3px; font-weight: 800; line-height: 1.1; }
-  .tagline {
-    font-size: 10px;
-    color: var(--muted);
-    letter-spacing: 1.2px;
-    text-transform: uppercase;
-    font-weight: 700;
-    margin-top: 1px;
-  }
-  .logo-mark {
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    border: 2px solid var(--accent);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-  }
-  .logo-needle {
-    width: 9px;
-    height: 9px;
-    background: linear-gradient(135deg, var(--like) 50%, var(--dislike) 50%);
-    transform: rotate(45deg);
-  }
-  .nav-pill {
-    border: 1px solid var(--border);
-    background: var(--surface);
-    color: var(--accent);
-    font-size: 0.85rem;
-    font-weight: 700;
-    padding: 10px 16px;
-    min-height: 40px;
-    border-radius: 999px;
-    cursor: pointer;
-    font-family: inherit;
-  }
-
-  /* ---- Capture card ---- */
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 18px;
-    padding: 18px;
-    box-shadow: var(--shadow);
-  }
-  .picker { margin-bottom: 14px; }
-  .picker-label {
-    font-size: 0.72rem;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--muted);
-    font-weight: 600;
-    margin-bottom: 8px;
-  }
-  .picker-label .opt { text-transform: none; letter-spacing: 0; font-weight: 400; }
-  .picker-row { display: flex; gap: 8px; flex-wrap: wrap; }
-  .tagcard {
-    flex: 1 1 100px;
-    text-align: left;
-    border: 1px solid var(--border);
-    background: var(--surface);
-    color: var(--muted);
-    padding: 10px 12px;
-    min-height: 44px;
-    border-radius: 10px;
-    cursor: pointer;
-    user-select: none;
-    font-family: inherit;
-  }
-  .tagcard:hover { border-color: #C9BFA8; }
-  .tagcard .t-label { font-size: 0.85rem; font-weight: 700; }
-  .tagcard .t-desc { font-size: 0.72rem; margin-top: 2px; line-height: 1.3; }
-  .tagcard.active[data-tag="relationship"] { border-color: var(--tag-relationship); background: var(--tag-relationship-soft); color: var(--tag-relationship-deep); }
-  .tagcard.active[data-tag="aspiration"]   { border-color: var(--tag-aspiration);   background: var(--tag-aspiration-soft);   color: var(--tag-aspiration-deep); }
-  .tagcard.active[data-tag="friction"]     { border-color: var(--tag-friction);     background: var(--tag-friction-soft);     color: var(--tag-friction-deep); }
-
-  #captureInput {
-    width: 100%;
-    resize: none;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 10px 14px;
-    font-size: 1rem;
-    color: var(--ink);
-    background: var(--bg);
-    height: 46px;
-    max-height: 200px;
-    overflow-y: auto;
-    line-height: 1.4;
-    outline: none;
-    transition: height 0.08s ease;
-    font-family: inherit;
-  }
-  #captureInput::placeholder { color: var(--placeholder); }
-
-  .sentiment-row { display: flex; gap: 10px; margin-top: 14px; }
-  .sentiment-row button {
-    flex: 1;
-    border: none;
-    border-radius: 12px;
-    padding: 13px 12px;
-    font-size: 0.98rem;
-    font-weight: 600;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    color: #fff;
-    font-family: inherit;
-  }
-  .sentiment-row button:disabled { opacity: 0.45; cursor: not-allowed; }
-  #likeBtn { background: var(--like); }
-  #dislikeBtn { background: var(--dislike); }
-
-  /* ---- Recent ---- */
-  .recent { margin-top: 24px; }
-  .recent h2 {
-    font-size: 0.72rem;
-    text-transform: uppercase;
-    letter-spacing: 0.07em;
-    color: var(--muted);
-    margin: 0 0 10px;
-    font-weight: 600;
-    padding-left: 2px;
-  }
-  .recent-row {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    padding: 12px 0;
-    border-bottom: 1px solid var(--border);
-  }
-  .recent-row:last-child { border-bottom: none; }
-  .dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; margin-top: 7px; }
-  .dot.like { background: var(--like); }
-  .dot.dislike { background: var(--dislike); }
-  .recent-body { flex: 1; min-width: 0; }
-  .recent-text {
-    width: 100%;
-    border: none;
-    background: transparent;
-    font-size: 0.94rem;
-    line-height: 1.4;
-    color: var(--ink);
-    padding: 2px 4px;
-    margin: -2px -4px;
-    font-family: inherit;
-    outline: none;
-  }
-  .recent-text:focus { background: var(--bg); border-radius: 6px; }
-  .meta-row { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-top: 5px; }
-  .time { font-size: 0.74rem; color: var(--muted); }
-  .chip {
-    font-size: 0.7rem;
-    padding: 2px 8px;
-    border-radius: 999px;
-    font-weight: 600;
-    cursor: pointer;
-    border: 1px solid var(--border);
-    background: var(--surface);
-    color: var(--placeholder);
-    font-family: inherit;
-  }
-  .chip.active[data-tag="relationship"] { border-color: var(--tag-relationship); background: var(--tag-relationship-soft); color: var(--tag-relationship-deep); }
-  .chip.active[data-tag="aspiration"]   { border-color: var(--tag-aspiration);   background: var(--tag-aspiration-soft);   color: var(--tag-aspiration-deep); }
-  .chip.active[data-tag="friction"]     { border-color: var(--tag-friction);     background: var(--tag-friction-soft);     color: var(--tag-friction-deep); }
-  .chip.active[data-sent="like"]        { border-color: var(--like);    background: var(--like-soft);    color: var(--like); }
-  .chip.active[data-sent="dislike"]     { border-color: var(--dislike); background: var(--dislike-soft); color: var(--dislike); }
-  .row-del {
-    flex: 0 0 auto;
-    background: none;
-    border: none;
-    color: var(--muted);
-    cursor: pointer;
-    font-size: 0.95rem;
-    line-height: 1;
-    padding: 4px 6px;
-    border-radius: 6px;
-    font-family: inherit;
-  }
-  .row-del:hover { background: var(--bg); color: var(--dislike); }
-
-  /* ---- Overview: tag map ---- */
-  .intro {
-    font-size: 12.5px;
-    color: var(--muted);
-    margin: -2px 0 16px;
-    padding: 0 4px;
-    line-height: 1.5;
-  }
-  .tab-track {
-    display: flex;
-    gap: 6px;
-    background: var(--neutral);
-    border-radius: 999px;
-    padding: 5px;
-    margin: 0 4px 18px;
-  }
-  .tab-btn {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    border: none;
-    border-radius: 999px;
-    padding: 10px 0;
-    font-family: inherit;
-    font-size: 13.5px;
-    font-weight: 700;
-    color: var(--muted);
-    background: transparent;
-    cursor: pointer;
-    transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
-  }
-  .tab-btn.active { background: var(--surface); box-shadow: 0 2px 6px rgba(0,0,0,0.12); }
-  .tab-btn.active[data-mood="like"] { color: var(--like); }
-  .tab-btn.active[data-mood="dislike"] { color: var(--dislike); }
-  .tab-count {
-    font-size: 10.5px;
-    font-weight: 700;
-    opacity: 0.65;
-    background: rgba(0,0,0,0.06);
-    padding: 1px 6px;
-    border-radius: 999px;
-  }
-
-  .map-outer { padding: 0 4px; }
-  .tag-map { position: relative; width: 100%; padding-top: 96%; }
-  .tag-map .circle {
-    position: absolute;
-    width: 64%;
-    height: 64%;
-    border-radius: 50%;
-    mix-blend-mode: multiply;
-  }
-  .circle-r { left: 2%;  top: 6%;  background: var(--tag-relationship-fill); border: 1.5px solid var(--tag-relationship); }
-  .circle-a { left: 34%; top: 6%;  background: var(--tag-aspiration-fill);   border: 1.5px solid var(--tag-aspiration); }
-  .circle-f { left: 18%; top: 36%; background: var(--tag-friction-fill);     border: 1.5px solid var(--tag-friction); }
-  .map-label { position: absolute; font-size: 13px; font-weight: 800; }
-  .map-label.r { left: 8%;  top: 13%; color: var(--tag-relationship-deep); }
-  .map-label.a { left: 62%; top: 13%; color: var(--tag-aspiration-deep); }
-  .map-label.f { left: 50%; top: 87%; transform: translateX(-50%); color: var(--tag-friction-deep); }
-
-  .vpill-wrap {
-    position: absolute;
-    z-index: 2;
-    animation: chip-fade 0.4s ease both;
-    transition: left 0.5s cubic-bezier(0.3, 0.8, 0.4, 1.1),
-                top 0.5s cubic-bezier(0.3, 0.8, 0.4, 1.1),
-                transform 0.5s cubic-bezier(0.3, 0.8, 0.4, 1.1);
-  }
-  .vpill {
-    border: none;
-    font-family: inherit;
-    font-size: 12.5px;
-    font-weight: 600;
-    color: var(--ink);
-    padding: 8px 12px;
-    border-radius: 14px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.10);
-    cursor: pointer;
-    max-width: 126px;
-    text-align: left;
-    line-height: 1.28;
-    display: inline-block;
-    animation: floaty 6s ease-in-out infinite;
-    transition: opacity 0.25s ease;
-  }
-  .vpill.untagged { max-width: 168px; animation-name: floaty, chip-fade; }
-  #overviewView.dimmed .vpill { opacity: 0.3; }
-  #overviewView.dimmed .vpill.is-selected { opacity: 0; pointer-events: none; }
-
-  .untagged-label {
-    margin: 18px 4px 8px;
-    font-size: 10.5px;
-    font-weight: 800;
-    letter-spacing: 1.1px;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
-  .untagged-row { display: flex; flex-wrap: wrap; gap: 10px; padding: 0 4px; }
-
-  /* ---- Entry-selected overlay ---- */
-  .overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 100;
-    background: rgba(20, 16, 10, 0.44);
-    -webkit-backdrop-filter: blur(3px);
-    backdrop-filter: blur(3px);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 18px;
-    padding: 0 28px;
-    animation: backdrop-in 0.22s ease;
-  }
-  .overlay[hidden] { display: none; }
-  .mood-toggle {
-    display: flex;
-    gap: 6px;
-    background: var(--bg);
-    padding: 6px;
-    border-radius: 999px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-    animation: pop-in 0.32s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-  }
-  .mood-btn {
-    padding: 10px 18px;
-    border-radius: 999px;
-    border: none;
-    font-family: inherit;
-    font-weight: 700;
-    font-size: 13.5px;
-    cursor: pointer;
-    background: transparent;
-    color: var(--muted);
-    transition: background 0.2s ease, color 0.2s ease;
-  }
-  .mood-btn.active[data-mood="like"]    { background: var(--like);    color: #fff; }
-  .mood-btn.active[data-mood="dislike"] { background: var(--dislike); color: #fff; }
-  .overlay-card {
-    position: relative;
-    background: var(--surface);
-    color: var(--ink);
-    padding: 20px 22px;
-    border-radius: 20px;
-    max-width: 260px;
-    min-width: 180px;
-    box-shadow: 0 22px 50px rgba(0,0,0,0.28);
-    font-size: 15px;
-    font-weight: 600;
-    line-height: 1.4;
-    text-align: center;
-    animation: card-in 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
-  }
-  .overlay-del {
-    position: absolute;
-    top: -14px;
-    right: -14px;
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    border: none;
-    background: var(--ink);
-    color: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 19px;
-    font-weight: 700;
-    line-height: 1;
-    padding: 0;
-    cursor: pointer;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.32);
-    animation: pop-in 0.3s 0.26s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-  }
-  .bubble-row { display: flex; gap: 14px; }
-  .tag-bubble {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: inherit;
-    font-weight: 800;
-    font-size: 16px;
-    padding: 0;
-    cursor: pointer;
-    background: var(--surface);
-    border: 2px solid;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.12);
-    animation: pop-in 0.32s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-    transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
-  }
-  .tag-bubble:nth-child(1) { animation-delay: 0.08s; }
-  .tag-bubble:nth-child(2) { animation-delay: 0.14s; }
-  .tag-bubble:nth-child(3) { animation-delay: 0.20s; }
-  .tag-bubble[data-tag="relationship"] { border-color: var(--tag-relationship); color: var(--tag-relationship-deep); }
-  .tag-bubble[data-tag="aspiration"]   { border-color: var(--tag-aspiration);   color: var(--tag-aspiration-deep); }
-  .tag-bubble[data-tag="friction"]     { border-color: var(--tag-friction);     color: var(--tag-friction-deep); }
-  .tag-bubble.active[data-tag="relationship"] { background: var(--tag-relationship); color: #fff; box-shadow: 0 6px 16px rgba(124,111,174,0.4); }
-  .tag-bubble.active[data-tag="aspiration"]   { background: var(--tag-aspiration);   color: #fff; box-shadow: 0 6px 16px rgba(201,151,47,0.4); }
-  .tag-bubble.active[data-tag="friction"]     { background: var(--tag-friction);     color: #fff; box-shadow: 0 6px 16px rgba(122,123,133,0.4); }
-
-  /* ---- Empty state ---- */
-  .empty-hint {
-    text-align: center;
-    padding: 36px 20px 8px;
-    color: var(--muted);
-    animation: rise-in 0.5s ease 0.18s both;
-  }
-  .empty-hint p { margin: 0 0 10px; font-size: 0.92rem; line-height: 1.55; }
-  .empty-hint .empty-sub { font-size: 0.8rem; color: var(--placeholder); }
-
-  /* ---- Motion & native feel ---- */
-  @keyframes rise-in {
-    from { opacity: 0; transform: translateY(14px); }
-    to { opacity: 1; transform: none; }
-  }
-  @keyframes slide-in-right {
-    from { opacity: 0; transform: translateX(28px); }
-    to { opacity: 1; transform: none; }
-  }
-  @keyframes slide-in-left {
-    from { opacity: 0; transform: translateX(-28px); }
-    to { opacity: 1; transform: none; }
-  }
-  @keyframes row-enter {
-    from { opacity: 0; transform: translateY(-8px); }
-    to { opacity: 1; transform: none; }
-  }
-  @keyframes btn-pop {
-    0% { transform: scale(1); }
-    40% { transform: scale(0.93); }
-    70% { transform: scale(1.04); }
-    100% { transform: scale(1); }
-  }
-  @keyframes chip-fade {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-  @keyframes floaty {
-    0% { transform: translate(0, 0) rotate(0deg); }
-    33% { transform: translate(3px, -7px) rotate(1.6deg); }
-    66% { transform: translate(-4px, 4px) rotate(-1.3deg); }
-    100% { transform: translate(0, 0) rotate(0deg); }
-  }
-  @keyframes pop-in {
-    0% { opacity: 0; transform: scale(0.4) translateY(6px); }
-    70% { opacity: 1; transform: scale(1.08) translateY(0); }
-    100% { opacity: 1; transform: scale(1) translateY(0); }
-  }
-  @keyframes card-in {
-    0% { opacity: 0; transform: scale(0.82); }
-    100% { opacity: 1; transform: scale(1); }
-  }
-  @keyframes backdrop-in {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-
-  header { animation: rise-in 0.4s ease both; }
-  .card { animation: rise-in 0.45s ease 0.06s both; }
-  .recent { animation: rise-in 0.45s ease 0.14s both; }
-  main.anim-right { animation: slide-in-right 0.32s cubic-bezier(0.25, 0.8, 0.35, 1) both; }
-  main.anim-left { animation: slide-in-left 0.32s cubic-bezier(0.25, 0.8, 0.35, 1) both; }
-  .recent-row.row-enter { animation: row-enter 0.4s cubic-bezier(0.2, 0.8, 0.3, 1.1) both; }
-
-  .tagcard, .chip, .nav-pill, .row-del, .sentiment-row button {
-    transition: transform 0.15s ease, background-color 0.2s ease, border-color 0.2s ease,
-                color 0.2s ease, box-shadow 0.2s ease;
-  }
-  .sentiment-row button { box-shadow: 0 2px 8px rgba(43, 38, 32, 0.12); }
-  .sentiment-row button:active:not(:disabled) { transform: scale(0.97); box-shadow: 0 1px 4px rgba(43, 38, 32, 0.1); }
-  .sentiment-row button.btn-pop { animation: btn-pop 0.35s ease; }
-  .tagcard:active, .nav-pill:active { transform: scale(0.97); }
-  .chip:active, .row-del:active { transform: scale(0.9); }
-
-  @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after {
-      animation: none !important;
-      transition: none !important;
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Livskompas — Quick Capture</title>
+  <meta name="description"
+    content="Quick capture for moments worth keeping: the people you don't want to lose, what you're reaching for, and what got in the way.">
+  <meta name="theme-color" content="#FBF6EE" media="(prefers-color-scheme: light)">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Livskompas">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="manifest" href="manifest.json">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg: #FBF6EE;
+      --ink: #2B2620;
+      --muted: #8A8071;
+      --border: #E4DDD1;
+      --surface: #FFFFFF;
+      --neutral: #F1EBDF;
+      --accent: #2B2620;
+      --like: #3E7A50;
+      --like-soft: #E4EFE7;
+      --dislike: #B3492D;
+      --dislike-soft: #F5E7E1;
+      --tag-relationship: #7C6FAE;
+      --tag-relationship-fill: rgba(124, 111, 174, 0.20);
+      --tag-relationship-soft: #E9E3F6;
+      --tag-relationship-deep: #5B4E8C;
+      --tag-aspiration: #C9972F;
+      --tag-aspiration-fill: rgba(201, 151, 47, 0.20);
+      --tag-aspiration-soft: #F6ECD4;
+      --tag-aspiration-deep: #8C6A1E;
+      --tag-friction: #7A7B85;
+      --tag-friction-fill: rgba(122, 123, 133, 0.20);
+      --tag-friction-soft: #E8E8EC;
+      --tag-friction-deep: #54555E;
+      --placeholder: #ABA091;
+      --shadow: 0 1px 2px rgba(43, 38, 32, .06), 0 4px 16px rgba(43, 38, 32, .05);
     }
-  }
-</style>
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      -webkit-text-size-adjust: 100%;
+      text-size-adjust: 100%;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      min-height: calc(100dvh + 1px);
+      overscroll-behavior-x: none;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -webkit-tap-highlight-color: transparent;
+      display: flex;
+      justify-content: center;
+    }
+
+    button {
+      touch-action: manipulation;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    .page {
+      width: 100%;
+      max-width: 480px;
+      padding: 0 16px calc(32px + env(safe-area-inset-bottom));
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 0 -16px 14px;
+      padding: calc(14px + env(safe-area-inset-top)) 20px 12px;
+      background: rgba(251, 246, 238, 0.85);
+      -webkit-backdrop-filter: blur(14px) saturate(1.4);
+      backdrop-filter: blur(14px) saturate(1.4);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand h1 {
+      font-size: 18px;
+      margin: 0;
+      letter-spacing: -0.3px;
+      font-weight: 800;
+      line-height: 1.1;
+    }
+
+    .tagline {
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      font-weight: 700;
+      margin-top: 1px;
+    }
+
+    .logo-mark {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 2px solid var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .logo-needle {
+      width: 9px;
+      height: 9px;
+      background: linear-gradient(135deg, var(--like) 50%, var(--dislike) 50%);
+      transform: rotate(45deg);
+    }
+
+    .nav-pill {
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--accent);
+      font-size: 0.85rem;
+      font-weight: 700;
+      padding: 10px 16px;
+      min-height: 40px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    /* ---- Capture card ---- */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .picker {
+      margin-bottom: 14px;
+    }
+
+    .picker-label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .picker-label .opt {
+      text-transform: none;
+      letter-spacing: 0;
+      font-weight: 400;
+    }
+
+    .picker-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .tagcard {
+      flex: 1 1 100px;
+      text-align: left;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--muted);
+      padding: 10px 12px;
+      min-height: 44px;
+      border-radius: 10px;
+      cursor: pointer;
+      -webkit-user-select: none;
+      user-select: none;
+      font-family: inherit;
+    }
+
+    .tagcard:hover {
+      border-color: #C9BFA8;
+    }
+
+    .tagcard .t-label {
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+
+    .tagcard .t-desc {
+      font-size: 0.72rem;
+      margin-top: 2px;
+      line-height: 1.3;
+    }
+
+    .tagcard.active[data-tag="relationship"] {
+      border-color: var(--tag-relationship);
+      background: var(--tag-relationship-soft);
+      color: var(--tag-relationship-deep);
+    }
+
+    .tagcard.active[data-tag="aspiration"] {
+      border-color: var(--tag-aspiration);
+      background: var(--tag-aspiration-soft);
+      color: var(--tag-aspiration-deep);
+    }
+
+    .tagcard.active[data-tag="friction"] {
+      border-color: var(--tag-friction);
+      background: var(--tag-friction-soft);
+      color: var(--tag-friction-deep);
+    }
+
+    #captureInput {
+      width: 100%;
+      resize: none;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 1rem;
+      color: var(--ink);
+      background: var(--bg);
+      height: 46px;
+      max-height: 200px;
+      overflow-y: auto;
+      line-height: 1.4;
+      outline: none;
+      transition: height 0.08s ease;
+      font-family: inherit;
+    }
+
+    #captureInput::placeholder {
+      color: var(--placeholder);
+    }
+
+    .sentiment-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .sentiment-row button {
+      flex: 1;
+      border: none;
+      border-radius: 12px;
+      padding: 13px 12px;
+      font-size: 0.98rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: #fff;
+      font-family: inherit;
+    }
+
+    .sentiment-row button:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    #likeBtn {
+      background: var(--like);
+    }
+
+    #dislikeBtn {
+      background: var(--dislike);
+    }
+
+    /* ---- Recent ---- */
+    .recent {
+      margin-top: 24px;
+    }
+
+    .recent h2 {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--muted);
+      margin: 0 0 10px;
+      font-weight: 600;
+      padding-left: 2px;
+    }
+
+    .recent-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .recent-row:last-child {
+      border-bottom: none;
+    }
+
+    .dot {
+      flex: 0 0 auto;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-top: 7px;
+    }
+
+    .dot.like {
+      background: var(--like);
+    }
+
+    .dot.dislike {
+      background: var(--dislike);
+    }
+
+    .recent-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .recent-text {
+      width: 100%;
+      border: none;
+      background: transparent;
+      font-size: 0.94rem;
+      line-height: 1.4;
+      color: var(--ink);
+      padding: 2px 4px;
+      margin: -2px -4px;
+      font-family: inherit;
+      outline: none;
+    }
+
+    .recent-text:focus {
+      background: var(--bg);
+      border-radius: 6px;
+    }
+
+    .meta-row {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 5px;
+    }
+
+    .time {
+      font-size: 0.74rem;
+      color: var(--muted);
+    }
+
+    .chip {
+      font-size: 0.7rem;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--placeholder);
+      font-family: inherit;
+    }
+
+    .chip.active[data-tag="relationship"] {
+      border-color: var(--tag-relationship);
+      background: var(--tag-relationship-soft);
+      color: var(--tag-relationship-deep);
+    }
+
+    .chip.active[data-tag="aspiration"] {
+      border-color: var(--tag-aspiration);
+      background: var(--tag-aspiration-soft);
+      color: var(--tag-aspiration-deep);
+    }
+
+    .chip.active[data-tag="friction"] {
+      border-color: var(--tag-friction);
+      background: var(--tag-friction-soft);
+      color: var(--tag-friction-deep);
+    }
+
+    .chip.active[data-sent="like"] {
+      border-color: var(--like);
+      background: var(--like-soft);
+      color: var(--like);
+    }
+
+    .chip.active[data-sent="dislike"] {
+      border-color: var(--dislike);
+      background: var(--dislike-soft);
+      color: var(--dislike);
+    }
+
+    .row-del {
+      flex: 0 0 auto;
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 0.95rem;
+      line-height: 1;
+      padding: 4px 6px;
+      border-radius: 6px;
+      font-family: inherit;
+    }
+
+    .row-del:hover {
+      background: var(--bg);
+      color: var(--dislike);
+    }
+
+    /* ---- Overview: tag map ---- */
+    .intro {
+      font-size: 12.5px;
+      color: var(--muted);
+      margin: -2px 0 16px;
+      padding: 0 4px;
+      line-height: 1.5;
+    }
+
+    .tab-track {
+      display: flex;
+      gap: 6px;
+      background: var(--neutral);
+      border-radius: 999px;
+      padding: 5px;
+      margin: 0 4px 18px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border: none;
+      border-radius: 999px;
+      padding: 10px 0;
+      font-family: inherit;
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--muted);
+      background: transparent;
+      cursor: pointer;
+      transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .tab-btn.active {
+      background: var(--surface);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+    }
+
+    .tab-btn.active[data-mood="like"] {
+      color: var(--like);
+    }
+
+    .tab-btn.active[data-mood="dislike"] {
+      color: var(--dislike);
+    }
+
+    .tab-count {
+      font-size: 10.5px;
+      font-weight: 700;
+      opacity: 0.65;
+      background: rgba(0, 0, 0, 0.06);
+      padding: 1px 6px;
+      border-radius: 999px;
+    }
+
+    .map-outer {
+      padding: 0 4px;
+    }
+
+    .tag-map {
+      position: relative;
+      width: 100%;
+      padding-top: 96%;
+    }
+
+    .tag-map .circle {
+      position: absolute;
+      width: 64%;
+      height: 64%;
+      border-radius: 50%;
+      mix-blend-mode: multiply;
+    }
+
+    .circle-r {
+      left: 2%;
+      top: 6%;
+      background: var(--tag-relationship-fill);
+      border: 1.5px solid var(--tag-relationship);
+    }
+
+    .circle-a {
+      left: 34%;
+      top: 6%;
+      background: var(--tag-aspiration-fill);
+      border: 1.5px solid var(--tag-aspiration);
+    }
+
+    .circle-f {
+      left: 18%;
+      top: 36%;
+      background: var(--tag-friction-fill);
+      border: 1.5px solid var(--tag-friction);
+    }
+
+    .map-label {
+      position: absolute;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .map-label.r {
+      left: 8%;
+      top: 13%;
+      color: var(--tag-relationship-deep);
+    }
+
+    .map-label.a {
+      left: 62%;
+      top: 13%;
+      color: var(--tag-aspiration-deep);
+    }
+
+    .map-label.f {
+      left: 50%;
+      top: 87%;
+      transform: translateX(-50%);
+      color: var(--tag-friction-deep);
+    }
+
+    .vpill-wrap {
+      position: absolute;
+      z-index: 2;
+      animation: chip-fade 0.4s ease both;
+      transition: left 0.5s cubic-bezier(0.3, 0.8, 0.4, 1.1),
+        top 0.5s cubic-bezier(0.3, 0.8, 0.4, 1.1),
+        transform 0.5s cubic-bezier(0.3, 0.8, 0.4, 1.1);
+    }
+
+    .vpill {
+      border: none;
+      font-family: inherit;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--ink);
+      padding: 8px 12px;
+      border-radius: 14px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.10);
+      cursor: pointer;
+      max-width: 126px;
+      text-align: left;
+      line-height: 1.28;
+      display: inline-block;
+      animation: floaty 6s ease-in-out infinite;
+      transition: opacity 0.25s ease;
+    }
+
+    .vpill.untagged {
+      max-width: 168px;
+      animation-name: floaty, chip-fade;
+    }
+
+    #overviewView.dimmed .vpill {
+      opacity: 0.3;
+    }
+
+    #overviewView.dimmed .vpill.is-selected {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .untagged-label {
+      margin: 18px 4px 8px;
+      font-size: 10.5px;
+      font-weight: 800;
+      letter-spacing: 1.1px;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .untagged-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding: 0 4px;
+    }
+
+    /* ---- Entry-selected overlay ---- */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: rgba(20, 16, 10, 0.44);
+      -webkit-backdrop-filter: blur(3px);
+      backdrop-filter: blur(3px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      padding: 0 28px;
+      animation: backdrop-in 0.22s ease;
+    }
+
+    .overlay[hidden] {
+      display: none;
+    }
+
+    .mood-toggle {
+      display: flex;
+      gap: 6px;
+      background: var(--bg);
+      padding: 6px;
+      border-radius: 999px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      animation: pop-in 0.32s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    }
+
+    .mood-btn {
+      padding: 10px 18px;
+      border-radius: 999px;
+      border: none;
+      font-family: inherit;
+      font-weight: 700;
+      font-size: 13.5px;
+      cursor: pointer;
+      background: transparent;
+      color: var(--muted);
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+
+    .mood-btn.active[data-mood="like"] {
+      background: var(--like);
+      color: #fff;
+    }
+
+    .mood-btn.active[data-mood="dislike"] {
+      background: var(--dislike);
+      color: #fff;
+    }
+
+    .overlay-card {
+      position: relative;
+      background: var(--surface);
+      color: var(--ink);
+      padding: 20px 22px;
+      border-radius: 20px;
+      max-width: 260px;
+      min-width: 180px;
+      box-shadow: 0 22px 50px rgba(0, 0, 0, 0.28);
+      font-size: 15px;
+      font-weight: 600;
+      line-height: 1.4;
+      text-align: center;
+      animation: card-in 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .overlay-del {
+      position: absolute;
+      top: -14px;
+      right: -14px;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: none;
+      background: var(--ink);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 19px;
+      font-weight: 700;
+      line-height: 1;
+      padding: 0;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.32);
+      animation: pop-in 0.3s 0.26s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    }
+
+    .bubble-row {
+      display: flex;
+      gap: 14px;
+    }
+
+    .tag-bubble {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: inherit;
+      font-weight: 800;
+      font-size: 16px;
+      padding: 0;
+      cursor: pointer;
+      background: var(--surface);
+      border: 2px solid;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+      animation: pop-in 0.32s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+      transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .tag-bubble:nth-child(1) {
+      animation-delay: 0.08s;
+    }
+
+    .tag-bubble:nth-child(2) {
+      animation-delay: 0.14s;
+    }
+
+    .tag-bubble:nth-child(3) {
+      animation-delay: 0.20s;
+    }
+
+    .tag-bubble[data-tag="relationship"] {
+      border-color: var(--tag-relationship);
+      color: var(--tag-relationship-deep);
+    }
+
+    .tag-bubble[data-tag="aspiration"] {
+      border-color: var(--tag-aspiration);
+      color: var(--tag-aspiration-deep);
+    }
+
+    .tag-bubble[data-tag="friction"] {
+      border-color: var(--tag-friction);
+      color: var(--tag-friction-deep);
+    }
+
+    .tag-bubble.active[data-tag="relationship"] {
+      background: var(--tag-relationship);
+      color: #fff;
+      box-shadow: 0 6px 16px rgba(124, 111, 174, 0.4);
+    }
+
+    .tag-bubble.active[data-tag="aspiration"] {
+      background: var(--tag-aspiration);
+      color: #fff;
+      box-shadow: 0 6px 16px rgba(201, 151, 47, 0.4);
+    }
+
+    .tag-bubble.active[data-tag="friction"] {
+      background: var(--tag-friction);
+      color: #fff;
+      box-shadow: 0 6px 16px rgba(122, 123, 133, 0.4);
+    }
+
+    /* ---- Empty state ---- */
+    .empty-hint {
+      text-align: center;
+      padding: 36px 20px 8px;
+      color: var(--muted);
+      animation: rise-in 0.5s ease 0.18s both;
+    }
+
+    .empty-hint p {
+      margin: 0 0 10px;
+      font-size: 0.92rem;
+      line-height: 1.55;
+    }
+
+    .empty-hint .empty-sub {
+      font-size: 0.8rem;
+      color: var(--placeholder);
+    }
+
+    /* ---- Motion & native feel ---- */
+    @keyframes rise-in {
+      from {
+        opacity: 0;
+        transform: translateY(14px);
+      }
+
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    @keyframes slide-in-right {
+      from {
+        opacity: 0;
+        transform: translateX(28px);
+      }
+
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    @keyframes slide-in-left {
+      from {
+        opacity: 0;
+        transform: translateX(-28px);
+      }
+
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    @keyframes row-enter {
+      from {
+        opacity: 0;
+        transform: translateY(-8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    @keyframes btn-pop {
+      0% {
+        transform: scale(1);
+      }
+
+      40% {
+        transform: scale(0.93);
+      }
+
+      70% {
+        transform: scale(1.04);
+      }
+
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    @keyframes chip-fade {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    @keyframes floaty {
+      0% {
+        transform: translate(0, 0) rotate(0deg);
+      }
+
+      33% {
+        transform: translate(3px, -7px) rotate(1.6deg);
+      }
+
+      66% {
+        transform: translate(-4px, 4px) rotate(-1.3deg);
+      }
+
+      100% {
+        transform: translate(0, 0) rotate(0deg);
+      }
+    }
+
+    @keyframes pop-in {
+      0% {
+        opacity: 0;
+        transform: scale(0.4) translateY(6px);
+      }
+
+      70% {
+        opacity: 1;
+        transform: scale(1.08) translateY(0);
+      }
+
+      100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    @keyframes card-in {
+      0% {
+        opacity: 0;
+        transform: scale(0.82);
+      }
+
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    @keyframes backdrop-in {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    header {
+      animation: rise-in 0.4s ease both;
+    }
+
+    .card {
+      animation: rise-in 0.45s ease 0.06s both;
+    }
+
+    .recent {
+      animation: rise-in 0.45s ease 0.14s both;
+    }
+
+    main.anim-right {
+      animation: slide-in-right 0.32s cubic-bezier(0.25, 0.8, 0.35, 1) both;
+    }
+
+    main.anim-left {
+      animation: slide-in-left 0.32s cubic-bezier(0.25, 0.8, 0.35, 1) both;
+    }
+
+    .recent-row.row-enter {
+      animation: row-enter 0.4s cubic-bezier(0.2, 0.8, 0.3, 1.1) both;
+    }
+
+    .tagcard,
+    .chip,
+    .nav-pill,
+    .row-del,
+    .sentiment-row button {
+      transition: transform 0.15s ease, background-color 0.2s ease, border-color 0.2s ease,
+        color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .sentiment-row button {
+      box-shadow: 0 2px 8px rgba(43, 38, 32, 0.12);
+    }
+
+    .sentiment-row button:active:not(:disabled) {
+      transform: scale(0.97);
+      box-shadow: 0 1px 4px rgba(43, 38, 32, 0.1);
+    }
+
+    .sentiment-row button.btn-pop {
+      animation: btn-pop 0.35s ease;
+    }
+
+    .tagcard:active,
+    .nav-pill:active {
+      transform: scale(0.97);
+    }
+
+    .chip:active,
+    .row-del:active {
+      transform: scale(0.9);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+
+      *,
+      *::before,
+      *::after {
+        animation: none !important;
+        transition: none !important;
+      }
+    }
+  </style>
 </head>
+
 <body>
-<div class="page" id="page">
+  <div class="page" id="page">
 
-  <header>
-    <div class="brand">
-      <div class="logo-mark" aria-hidden="true"><div class="logo-needle"></div></div>
-      <div class="brand-text">
-        <h1>Livskompas</h1>
-        <span class="tagline">Quick capture</span>
+    <header>
+      <div class="brand">
+        <div class="logo-mark" aria-hidden="true">
+          <div class="logo-needle"></div>
+        </div>
+        <div class="brand-text">
+          <h1>Livskompas</h1>
+          <span class="tagline">Quick capture</span>
+        </div>
       </div>
-    </div>
-    <button type="button" class="nav-pill" id="navBtn">View all</button>
-  </header>
+      <button type="button" class="nav-pill" id="navBtn">View all</button>
+    </header>
 
-  <main id="captureView">
-    <div class="card">
-      <div class="picker">
-        <div class="picker-label">What kind of moment is this? <span class="opt">(optional)</span></div>
-        <div class="picker-row" id="pickerRow"></div>
+    <main id="captureView">
+      <div class="card">
+        <div class="picker">
+          <div class="picker-label">What kind of moment is this? <span class="opt">(optional)</span></div>
+          <div class="picker-row" id="pickerRow"></div>
+        </div>
+        <textarea id="captureInput" placeholder="What's on your mind?" maxlength="280" rows="1" autofocus></textarea>
+        <div class="sentiment-row">
+          <button type="button" id="likeBtn" disabled>♡ Like</button>
+          <button type="button" id="dislikeBtn" disabled>✕ Dislike</button>
+        </div>
       </div>
-      <textarea id="captureInput" placeholder="What's on your mind?" maxlength="280" rows="1" autofocus></textarea>
-      <div class="sentiment-row">
-        <button type="button" id="likeBtn" disabled>♡ Like</button>
-        <button type="button" id="dislikeBtn" disabled>✕ Dislike</button>
+      <div class="recent" id="recentSection" hidden>
+        <h2>Recent</h2>
+        <div id="recentList"></div>
       </div>
-    </div>
-    <div class="recent" id="recentSection" hidden>
-      <h2>Recent</h2>
-      <div id="recentList"></div>
-    </div>
-    <div class="empty-hint" id="emptyHint" hidden>
-      <p>Capture the moments that move you — the people you don't want to lose, what you're reaching for, and whatever got in the way.</p>
-      <p class="empty-sub">A few honest seconds, whenever it happens. Small captures compound — and a missed day erases nothing.</p>
-    </div>
-  </main>
-
-  <main id="overviewView" hidden>
-    <p class="intro">Tap an entry to edit its mood and tags.</p>
-    <div class="tab-track">
-      <button type="button" class="tab-btn" data-mood="like" id="tabLike">Liked <span class="tab-count" id="tabLikeCount">0</span></button>
-      <button type="button" class="tab-btn" data-mood="dislike" id="tabDislike">Disliked <span class="tab-count" id="tabDislikeCount">0</span></button>
-    </div>
-    <div class="map-outer">
-      <div class="tag-map" id="tagMap">
-        <div class="circle circle-f"></div>
-        <div class="circle circle-r"></div>
-        <div class="circle circle-a"></div>
-        <div class="map-label r">Relationship</div>
-        <div class="map-label a">Aspiration</div>
-        <div class="map-label f">Friction</div>
+      <div class="empty-hint" id="emptyHint" hidden>
+        <p>Capture the moments that move you — the people you don't want to lose, what you're reaching for, and whatever
+          got in the way.</p>
+        <p class="empty-sub">A few honest seconds, whenever it happens. Small captures compound — and a missed day
+          erases nothing.</p>
       </div>
-    </div>
-    <div class="untagged-label" id="untaggedLabel" hidden>Untagged</div>
-    <div class="untagged-row" id="untaggedRow" hidden></div>
-  </main>
+    </main>
 
-</div>
+    <main id="overviewView" hidden>
+      <p class="intro">Tap an entry to edit its mood and tags.</p>
+      <div class="tab-track">
+        <button type="button" class="tab-btn" data-mood="like" id="tabLike">Liked <span class="tab-count"
+            id="tabLikeCount">0</span></button>
+        <button type="button" class="tab-btn" data-mood="dislike" id="tabDislike">Disliked <span class="tab-count"
+            id="tabDislikeCount">0</span></button>
+      </div>
+      <div class="map-outer">
+        <div class="tag-map" id="tagMap">
+          <div class="circle circle-f"></div>
+          <div class="circle circle-r"></div>
+          <div class="circle circle-a"></div>
+          <div class="map-label r">Relationship</div>
+          <div class="map-label a">Aspiration</div>
+          <div class="map-label f">Friction</div>
+        </div>
+      </div>
+      <div class="untagged-label" id="untaggedLabel" hidden>Untagged</div>
+      <div class="untagged-row" id="untaggedRow" hidden></div>
+    </main>
 
-<div class="overlay" id="entryOverlay" hidden>
-  <div class="mood-toggle" id="moodToggle">
-    <button type="button" class="mood-btn" data-mood="like" id="moodLikeBtn">Liked</button>
-    <button type="button" class="mood-btn" data-mood="dislike" id="moodDislikeBtn">Disliked</button>
   </div>
-  <div class="overlay-card" id="overlayCard">
-    <button type="button" class="overlay-del" id="overlayDelBtn" title="Delete">&times;</button>
-    <div id="overlayText"></div>
-  </div>
-  <div class="bubble-row" id="bubbleRow">
-    <button type="button" class="tag-bubble" data-tag="relationship" title="Relationship">R</button>
-    <button type="button" class="tag-bubble" data-tag="aspiration" title="Aspiration">A</button>
-    <button type="button" class="tag-bubble" data-tag="friction" title="Friction">F</button>
-  </div>
-</div>
 
-<script src="js/constants.js"></script>
-<script src="js/utils.js"></script>
-<script src="js/data.js"></script>
-<script src="js/state.js"></script>
-<script src="js/capture.js"></script>
-<script src="js/recent.js"></script>
-<script src="js/overview.js"></script>
-<script src="js/overlay.js"></script>
-<script src="js/app.js"></script>
+  <div class="overlay" id="entryOverlay" hidden>
+    <div class="mood-toggle" id="moodToggle">
+      <button type="button" class="mood-btn" data-mood="like" id="moodLikeBtn">Liked</button>
+      <button type="button" class="mood-btn" data-mood="dislike" id="moodDislikeBtn">Disliked</button>
+    </div>
+    <div class="overlay-card" id="overlayCard">
+      <button type="button" class="overlay-del" id="overlayDelBtn" title="Delete">&times;</button>
+      <div id="overlayText"></div>
+    </div>
+    <div class="bubble-row" id="bubbleRow">
+      <button type="button" class="tag-bubble" data-tag="relationship" title="Relationship">R</button>
+      <button type="button" class="tag-bubble" data-tag="aspiration" title="Aspiration">A</button>
+      <button type="button" class="tag-bubble" data-tag="friction" title="Friction">F</button>
+    </div>
+  </div>
+
+  <script src="js/constants.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/capture.js"></script>
+  <script src="js/recent.js"></script>
+  <script src="js/overview.js"></script>
+  <script src="js/overlay.js"></script>
+  <script src="js/app.js"></script>
 </body>
+
 </html>
